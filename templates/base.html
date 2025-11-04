@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Планировщик-календарь событий/мероприятий">
+    <title>{% block title %}Планировщик мероприятий{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<script>
+    // Ждем когда вся страница загрузится
+    document.addEventListener('DOMContentLoaded', function() {
+        // Находим контейнер с кнопками
+        const authContainer = document.querySelector('.auth.nav-links');
+        // Находим кнопку "Войти"
+        const loginBtn = document.getElementById('loginBtn');
+        // Находим кнопку "Зарегистрироваться"
+        const regBtn = document.getElementById('regBtn');
+
+        // Когда наводим на кнопку "Войти"
+        loginBtn.addEventListener('mouseenter', function() {
+            // Убираем класс для нижней позиции
+            authContainer.classList.remove('sun-bottom');
+            // Добавляем класс для верхней позиции
+            authContainer.classList.add('sun-top');
+        });
+
+        // Когда наводим на кнопку "Зарегистрироваться"
+        regBtn.addEventListener('mouseenter', function() {
+            // Убираем класс для верхней позиции
+            authContainer.classList.remove('sun-top');
+            // Добавляем класс для нижней позиции
+            authContainer.classList.add('sun-bottom');
+        });
+
+        // Когда убираем курсор со всего контейнера
+        authContainer.addEventListener('mouseleave', function() {
+            // Убираем оба класса - солнце возвращается в центр
+            authContainer.classList.remove('sun-top', 'sun-bottom');
+        });
+    });
+</script>
+
+<!-- body -->
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>Planner</h1>
+
+
+
+            <div class="auth nav-links">
+                <a class="login-btn" id="loginBtn" href="auth/login.html">Войти</a>
+                <a class="reg-btn" id="regBtn" href="auth/register.html">Зарегистрироваться</a>
+            </div>
+
+
+            <!--<div class="dark theme switch slider">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div> хотел сделать кнопку смены темы-->
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

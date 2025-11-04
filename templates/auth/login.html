@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="welcome-section">
+        <h1>Добро пожаловать в Планировщик!</h1>
+        <p>Организуйте ваши мероприятия и встречи в одном месте</p>
+        <div class="action-buttons">
+            <a href="{{ url_for('calendar_view') }}" class="btn btn-primary">📅 Открыть календарь</a>
+            <a href="{{ url_for('create_event') }}" class="btn btn-secondary">➕ Добавить событие</a>
+        </div>
+    </div>
+
+    <div class="recent-events">
+        <h2>Ближайшие события</h2>
+        <div class="events-placeholder">
+            <p>Здесь будут отображаться ваши ближайшие события</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
