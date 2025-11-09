@@ -42,6 +42,54 @@
     --text-shadow-glow: 0 0 35px rgba(255, 165, 0, 0.3);       /* оранжевое свечение */
 }
 
+/*flash notications*/
+.flash-messages {
+    position: fixed;
+    top: 10px;
+    right: 820px;
+    z-index: 1000;
+}
+
+.flash-message {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 3s forwards;
+}
+
+.flash-message.success {
+    background: #25bd00;
+}
+
+.flash-message.error {
+    background: #ff4757;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-150%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-150%);
+        opacity: 0;
+    }
+}
+
 
 /*main*/
 body {
@@ -58,6 +106,7 @@ body {
 }
 
 .nav-container {
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -291,27 +340,59 @@ body {
     border-radius: 10px;
 }
 
-/* Остальные стили остаются без изменений */
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+
+/* if user.is_authenticated */
+.user-info {
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.login-succeed {
+    color: var(--gradient_color_2_darkened_theme);
+}
+
+.user-email {
+    color: var(--gradient_color_2_theme);
+    font-size: 2rem;
+}
+
+.logout-btn {
+    color: var(--gradient_color_2_theme);
+    padding: 5px 20px; /* Внутренние отступы вместо фиксированной ширины */
+    position: relative;
+    display: flex; /* или inline-flex */
+    align-items: center;
+    justify-content: center;
+    margin-top: 70px;
+    margin-left: 170px; /* Уменьшил отступ */
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     text-decoration: none;
-    font-size: 1rem;
-    transition: background-color 0.3s;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem; /* Чуть меньше шрифт */
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 80px; /* Минимальная ширина */
+    white-space: nowrap; /* Запрет переноса текста */
 }
 
-.btn-nav {
-    background: var(--background_main_color);
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 16px;
+.logout-btn:hover, .logout-btn:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px var(--color_theme_shadow_rgba);
 }
 
+.logout-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 5px 10px var(--color_theme_shadow_rgba);
+}
 
 /* Осенние листья */
 /* Осенние листья */
@@ -408,3 +489,37 @@ body {
     backface-visibility: hidden;
     perspective: 1000;
 }
+
+/* Transition Overlay
+#page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 2000px;
+    height: 1500px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    overflow: hidden;
+}
+
+#page-transition.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Элемент цветовой заливки
+.color-fill {
+    position: fixed;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B00FF, #FF0066);
+    transform: translate(-50%, -50%);
+    z-index: 10001;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Для темной темы
+[data-theme="dark"] .color-fill {
+    background: linear-gradient(135deg, #FF4500, #FFD700);
+}}*/

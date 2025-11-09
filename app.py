@@ -1,6 +1,11 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request, jsonify, flash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# from models.user import User, load_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'my-super-secret-key-12345-change-in-production'
@@ -8,90 +13,125 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calendar.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)  # ← СОЗДАЕМ ОБЪЕКТ
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
 
 
-# Модель события
-class Event(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
-    color = db.Column(db.String(7), default='#4285f4')
-    created_at = db.Column(db.DateTime, default=datetime)
-    user_id = db.Column(db.Integer, default=1)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    timezone = db.Column(db.String(50), default='Europe/Moscow')  # ← добавить это
+    # events = db.relationship('Event', backref='author', lazy=True)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'start': self.start_time.isoformat(),
-            'end': self.end_time.isoformat(),
-            'color': self.color
-        }
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
+
+#///
+#///
 # Главная страница
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-# Страница календаря
-@app.route('/calendar')
-def calendar_view():
-    return render_template('calendar/month_view.html')
+# Страница входа
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
 
-
-# Создание события
-@app.route('/events/create', methods=['GET', 'POST'])
-def create_event():
     if request.method == 'POST':
-        try:
-            # Получаем данные из формы
-            title = request.form['title']
-            description = request.form['description']
-            start_time_str = request.form['start_time']
-            end_time_str = request.form['end_time']
-            color = request.form.get('color', '#4285f4')
+        email = request.form['email']
+        password = request.form['password']
 
-            # Исправляем формат даты для Python
-            start_time = datetime.fromisoformat(start_time_str.replace('T', ' '))
-            end_time = datetime.fromisoformat(end_time_str.replace('T', ' '))
+        user = User.query.filter_by(email=email).first()
 
-            # Создаем событие
-            event = Event(
-                title=title,
-                description=description,
-                start_time=start_time,
-                end_time=end_time,
-                color=color
-            )
+        if user and user.check_password(password):
+            login_user(user, remember=True)
+            next_page = request.args.get('next')
+            flash('Вход выполнен!', 'success')
 
-            # Сохраняем в базу
-            db.session.add(event)
-            db.session.commit()
+            return redirect(next_page) if next_page else redirect(url_for('index'))
 
-            return redirect(url_for('calendar_view'))
+        else:
+            flash('Неверный email или пароль', 'error')
 
-        except Exception as e:
-            print(f"Ошибка при создании события: {e}")
-            return f"Ошибка при создании события: {e}", 400
-
-    # GET запрос - показываем форму
-    return render_template('events/event_form.html')
+    return render_template('auth/login.html')
 
 
-# API для получения событий
-@app.route('/api/events')
-def api_events():
-    try:
-        events = Event.query.all()
-        return jsonify([event.to_dict() for event in events])
-    except Exception as e:
-        print(f"Ошибка при получении событий: {e}")
-        return jsonify([])
+# Страница регистрации (не готова)
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        timezone = request.form['timezone']
+
+        # Проверка совпадения паролей
+        if password != confirm_password:
+            flash('Пароли не совпадают', 'error')
+            return render_template('register.html')
+
+        # Проверяем, нет ли уже такого пользователя
+        existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+        if existing_user:
+            flash('Этот Email уже использован', 'error')
+            return render_template('auth/register.html')
+
+        # Создаем нового пользователя
+        new_user = User(username=username, email=email, timezone=timezone)
+        new_user.set_password(password)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Регистрация успешна!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('auth/register.html')
+
+
+#Страница восстановления пароля (не готова)
+@app.route('/recover-password', methods=['GET', 'POST'])
+def recover_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        check_password = request.form['password']
+
+        if not password == check_password:
+            flash('Пароли не совпадают', 'error')
+            return redirect(url_for('recover-password'))
+
+
+
+        return redirect(url_for('login'))
+
+    return render_template('auth/recover-password.html')
+
+#Выход из аккаунта
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 # Инициализация базы данных

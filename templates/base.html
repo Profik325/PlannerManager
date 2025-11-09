@@ -25,22 +25,52 @@
                 </div>
             </h1>
 
-            <div class="auth nav-links">
-                <a class="login-btn" id="loginBtn" href="auth/login.html">Войти</a>
-                <a class="reg-btn" id="regBtn" href="auth/register.html">Зарегистрироваться</a>
-            </div>
-
+            {% if current_user.is_authenticated %}
+                <!-- Если пользователь вошел -->
+                <div class="user-info">
+                    <!--<span class="login-succeed">Вход выполнен в аккаунт:</span>-->
+                    <span class="user-email">{{ current_user.email }}</span>
+                    <a class="logout-btn" href="{{ url_for('logout') }}">Выйти</a>
+                </div>
+            {% else %}
+                <!-- Если пользователь не вошел -->
+                <div class="auth nav-links">
+                    <a class="login-btn" id="loginBtn" href="{{ url_for('login') }}">Войти</a>
+                    <a class="reg-btn" id="regBtn" href="{{ url_for('register') }}">Зарегистрироваться</a>
+                </div>
+            {% endif %}
 
         </div>
     </nav>
 
     <main class="main-content">
-        {% block content %}{% endblock %}
+        <!-- Flash сообщения -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
     </main>
+
+    <!-- Transition Overlay
+    <div id="page-transition" class="page-transition">
+        <div class="transition-leaves" id="transition-leaves"></div>
+        <div class="transition-overlay"></div>
+    </div>-->
 
     <script src="{{ url_for('static', filename='js/theme-switcher.js') }}"></script>
     <script src="{{ url_for('static', filename='js/falling-leaves.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sun-button-animations.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/page-transition.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
