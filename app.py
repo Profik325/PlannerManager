@@ -13,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calendar.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
 login_manager = LoginManager(app)  # ← СОЗДАЕМ ОБЪЕКТ
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
@@ -20,10 +21,10 @@ login_manager.login_message_category = 'info'
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    # username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    timezone = db.Column(db.String(50), default='Europe/Moscow')  # ← добавить это
+    # timezone = db.Column(db.String(50), default='Europe/Moscow')  # ← добавить это
     # events = db.relationship('Event', backref='author', lazy=True)
 
     def set_password(self, password):
@@ -78,26 +79,27 @@ def register():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        username = request.form['username']
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-        timezone = request.form['timezone']
+        # timezone = request.form['timezone']
 
         # Проверка совпадения паролей
         if password != confirm_password:
             flash('Пароли не совпадают', 'error')
-            return render_template('register.html')
+            return render_template('auth/register.html')
 
         # Проверяем, нет ли уже такого пользователя
-        existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+        existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash('Этот Email уже использован', 'error')
             return render_template('auth/register.html')
 
         # Создаем нового пользователя
-        new_user = User(username=username, email=email, timezone=timezone)
+        new_user = User(email=email)
         new_user.set_password(password)
+
+
 
         db.session.add(new_user)
         db.session.commit()

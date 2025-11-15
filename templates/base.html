@@ -28,7 +28,7 @@
             {% if current_user.is_authenticated %}
                 <!-- Если пользователь вошел -->
                 <div class="user-info">
-                    <!--<span class="login-succeed">Вход выполнен в аккаунт:</span>-->
+                    <span class="login-succeed">Вход выполнен в аккаунт:</span>
                     <span class="user-email">{{ current_user.email }}</span>
                     <a class="logout-btn" href="{{ url_for('logout') }}">Выйти</a>
                 </div>

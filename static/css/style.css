@@ -354,36 +354,46 @@ body {
 }
 
 .login-succeed {
-    color: var(--gradient_color_2_darkened_theme);
+    font-weight: 1200;
+    margin-left: 200px;
+    font-size: 1rem;
+    text-shadow: var(--text-shadow-primary),
+                 var(--text-shadow-glow);
+    color: var(--gradient_color_1_theme);
+    font-family: 'Arial', Gadget, sans-serif;
 }
 
 .user-email {
     color: var(--gradient_color_2_theme);
-    font-size: 2rem;
+    font-size: 1.3rem;
+    margin-left: 90px;
+    text-shadow: var(--text-shadow-primary),
+                 var(--text-shadow-glow);
+    font-family: 'Arial Black', Gadget, sans-serif;
 }
 
 .logout-btn {
     color: var(--gradient_color_2_theme);
-    padding: 5px 20px; /* Внутренние отступы вместо фиксированной ширины */
+    padding: 5px 40px; /* Внутренние отступы вместо фиксированной ширины */
     position: relative;
     display: flex; /* или inline-flex */
     align-items: center;
     justify-content: center;
-    margin-top: 70px;
-    margin-left: 170px; /* Уменьшил отступ */
+    margin-top: 60px;
+    margin-left: 260px; /* Уменьшил отступ */
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.3);
     text-decoration: none;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 0.9rem; /* Чуть меньше шрифт */
+    font-size: 1rem; /* Чуть меньше шрифт */
     transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     min-width: 80px; /* Минимальная ширина */
     white-space: nowrap; /* Запрет переноса текста */
 }
 
 .logout-btn:hover, .logout-btn:focus {
-    background: rgba(255, 255, 255, 0.1);
+    /*background: rgba(255, 255, 255, 0.1);*/
     border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 5px 10px var(--color_theme_shadow_rgba);

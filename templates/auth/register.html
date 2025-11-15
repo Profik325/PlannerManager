@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - Планировщик мероприятий{% endblock %}
+
+{% block content %}
+<div class="auth-window">
+    <div class="auth-container">
+        <!-- Левая часть - форма -->
+        <div class="form-section">
+            <div class="form-wrapper">
+                <h2 class="form-title">Регистрация</h2>
+                <form class="auth-form" method="POST" action="{{ url_for('register') }}" autocomplete="off">
+                    <!-- Скрытые поля против автозаполнения -->
+                    <input style="display:none" type="text" name="fakeusernameremembered"/>
+                    <input style="display:none" type="password" name="fakepasswordremembered"/>
+
+                    <div class="input-group">
+                        <input type="email" name="email" required placeholder="" autocomplete="new-email">
+                        <label>Email</label>
+                        <div class="input-highlight"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="password" required placeholder=""
+                               autocomplete="new-password" id="password-input">
+                        <label>Пароль</label>
+                        <div class="input-highlight"></div>
+                        <button type="button" class="password-toggle" id="password-toggle">
+                            <span class="eye-icon"></span>
+                        </button>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="confirm_password" required placeholder=""
+                               autocomplete="new-password" id="confirm-password-input">
+                        <label>Подтвердите пароль</label>
+                        <div class="input-highlight"></div>
+                        <button type="button" class="password-toggle" id="confirm-password-toggle">
+                            <span class="eye-icon"></span>
+                        </button>
+                    </div>
+
+                    <!--<div class="input-group">
+                        <select name="timezone" required class="timezone-select">
+                            <option value="" disabled selected>Выберите часовой пояс</option>
+                            <option value="Europe/Moscow">Москва (UTC+3)</option>
+                            <option value="Europe/Kaliningrad">Калининград (UTC+2)</option>
+                            <option value="Europe/Samara">Самара (UTC+4)</option>
+                            <option value="Asia/Yekaterinburg">Екатеринбург (UTC+5)</option>
+                            <option value="Asia/Omsk">Омск (UTC+6)</option>
+                            <option value="Asia/Krasnoyarsk">Красноярск (UTC+7)</option>
+                            <option value="Asia/Irkutsk">Иркутск (UTC+8)</option>
+                            <option value="Asia/Yakutsk">Якутск (UTC+9)</option>
+                            <option value="Asia/Vladivostok">Владивосток (UTC+10)</option>
+                            <option value="Asia/Magadan">Магадан (UTC+11)</option>
+                            <option value="Asia/Kamchatka">Камчатка (UTC+12)</option>
+                        </select>
+                        <label class="select-label">Часовой пояс</label>
+                        <div class="input-highlight"></div>
+                    </div>-->
+
+                    <button type="submit" class="submit-btn">
+                        <span>Зарегистрироваться</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Правая часть - время и ссылка -->
+        <div class="time-section">
+            <div class="time-display">
+                <span id="current-time">00:00:00</span>
+                <span id="current-date">1 января 2024</span>
+
+                <div class="form-links">
+                    <a href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-window {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 500px;
+        padding: 2rem 0;
+    }
+
+    .auth-container {
+        display: grid;
+        grid-template-columns: 1fr 0.5fr;
+        width: 900px;
+        height: 500px;
+        /*background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);*/
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    input::-ms-clear, input::-ms-reveal {
+        display: none;
+    }
+
+    /* Левая часть - форма */
+    .form-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .form-wrapper {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--gradient_color_2_theme);
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 1.8rem;
+        background: radial-gradient(
+            circle at 50% 130%,
+            var(--gradient_color_1_darkened_theme) 0%,
+            var(--gradient_color_1_darkened_theme) 30%,
+            transparent 70%
+        );
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        padding: 1rem 0;
+        padding-right: 2.5rem;
+        border: none;
+        border-bottom: 2px solid #ddd;
+        background: transparent;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        color: #333;
+        font-family: inherit;
+    }
+
+    .timezone-select {
+        appearance: none;
+        cursor: pointer;
+        background: transparent;
+    }
+
+    .timezone-select:focus {
+        outline: none;
+    }
+
+    .input-group select {
+        /*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;*/
+        background-position: right 8px center;
+        background-size: 12px;
+    }
+
+    .input-group input:-webkit-autofill,
+    .input-group input:-webkit-autofill:hover,
+    .input-group input:-webkit-autofill:focus,
+    .input-group input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+        -webkit-text-fill-color: #333 !important;
+        transition: background-color 5000s ease-in-out 0s;
+        border-bottom-color: var(--gradient_color_2_theme) !important;
+    }
+
+    [data-theme="dark"] .input-group input,
+    [data-theme="dark"] .input-group select {
+        color: white;
+        border-bottom-color: #410061;
+    }
+
+    [data-theme="dark"] .input-group input:-webkit-autofill,
+    [data-theme="dark"] .input-group input:-webkit-autofill:hover,
+    [data-theme="dark"] .input-group input:-webkit-autofill:focus,
+    [data-theme="dark"] .input-group input:-webkit-autofill:active {
+        -webkit-text-fill-color: white !important;
+        border-bottom-color: var(--gradient_color_2_theme) !important;
+    }
+
+    [data-theme="dark"] .input-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+        outline: none;
+        border-bottom-color: var(--gradient_color_2_theme);
+    }
+
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label,
+    .input-group select:focus + .select-label,
+    .input-group select:valid + .select-label {
+        top: -18px;
+        font-size: 0.8rem;
+        color: var(--gradient_color_2_theme);
+    }
+
+    .input-group label,
+    .select-label {
+        position: absolute;
+        top: 1rem;
+        left: 0;
+        font-size: 1rem;
+        color: #999;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .input-highlight {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--gradient_color_2_theme);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    .input-group input:focus ~ .input-highlight,
+    .input-group select:focus ~ .input-highlight {
+        width: 100%;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        opacity: 0.6;
+        transition: all 0.3s ease;
+        z-index: 999;
+    }
+
+    .password-toggle:hover {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .eye-icon {
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+
+    .password-toggle.active .eye-icon {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    .password-toggle .eye-icon {
+        width: 20px;
+        height: 20px;
+        background: currentColor;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E") no-repeat center;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E") no-repeat center;
+    }
+
+    .password-toggle.active .eye-icon {
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z'/%3E%3C/svg%3E") no-repeat center;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z'/%3E%3C/svg%3E") no-repeat center;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, var(--gradient_color_1_theme), var(--gradient_color_2_theme));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px var(--color_theme_shadow_rgba);
+    }
+
+    /* Правая часть - время */
+    .time-section {
+        /*background: linear-gradient(135deg,
+            var(--gradient_color_1_darkened_theme),
+            var(--gradient_color_2_theme));*/
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .time-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /*background:
+            radial-gradient(circle at 20% 80%, var(--color_2_theme_rgba) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, var(--gradient_color_2_theme) 0%, transparent 50%);*/
+        animation: timeGlow 8s ease-in-out infinite alternate;
+    }
+
+    .time-display {
+        text-align: center;
+        color: white;
+        z-index: 2;
+        position: relative;
+    }
+
+    #current-time {
+        font-size: 2.8rem;
+        font-weight: 300;
+        display: block;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        font-family: 'Courier New', monospace;
+    }
+
+    #current-date {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        margin-bottom: 2rem;
+    }
+
+    .form-links {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .form-links a {
+        color: var(--gradient_color_1_theme);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .form-links a:hover {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        color: var(--gradient_color_2_theme)
+    }
+
+    @keyframes timeGlow {
+        0% { opacity: 0.3; }
+        100% { opacity: 0.6; }
+    }
+
+    [data-theme="dark"] .password-toggle {
+        color: white;
+    }
+
+    [data-theme="dark"] .input-group input,
+    [data-theme="dark"] .input-group select {
+        color: white;
+    }
+
+    [data-theme="dark"] .input-group label,
+    [data-theme="dark"] .select-label {
+        color: #aaa;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .auth-container {
+            grid-template-columns: 1fr;
+            width: 95%;
+            height: auto;
+        }
+
+        .time-section {
+            min-height: 200px;
+        }
+
+        #current-time {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+
+<script>
+    // Функция для обновления времени
+    function updateTime() {
+        const now = new Date();
+        const timeElement = document.getElementById('current-time');
+        const dateElement = document.getElementById('current-date');
+
+        if (timeElement && dateElement) {
+            const timeString = now.toLocaleTimeString('ru-RU');
+            const dateString = now.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            timeElement.textContent = timeString;
+            dateElement.textContent = dateString;
+        }
+    }
+
+    // Функция для переключения видимости пароля
+    function setupPasswordToggle(inputId, toggleId) {
+        const passwordInput = document.getElementById(inputId);
+        const passwordToggle = document.getElementById(toggleId);
+
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordToggle.classList.add('active');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordToggle.classList.remove('active');
+                }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Настраиваем переключатели для обоих полей пароля
+        setupPasswordToggle('password-input', 'password-toggle');
+        setupPasswordToggle('confirm-password-input', 'confirm-password-toggle');
+    });
+</script>
+{% endblock %}
