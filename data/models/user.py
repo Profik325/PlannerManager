@@ -34,17 +34,19 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'users'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    username = sqlalchemy.Column(sqlalchemy.String(80), unique=True, nullable=False)
+    # username = sqlalchemy.Column(sqlalchemy.String(80), unique=True, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String(120),  unique=True, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String(128))
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    # created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     owned_tables = orm.relationship("Table",  back_populates='owner',
                                      lazy='dynamic', cascade='all, delete-orphan')
     created_events = orm.relationship('Event', back_populates='creator',
                                        lazy='dynamic')
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.hashed_password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        if not self.hashed_password:
+            return False
+        return check_password_hash(self.hashed_password, password)

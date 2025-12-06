@@ -30,13 +30,13 @@
                 <div class="user-info">
                     <span class="login-succeed">Вход выполнен в аккаунт:</span>
                     <span class="user-email">{{ current_user.email }}</span>
-                    <a class="logout-btn" href="{{ url_for('logout') }}">Выйти</a>
+                    <a class="logout-btn" href="{{ url_for('users.logout') }}">Выйти</a>
                 </div>
             {% else %}
                 <!-- Если пользователь не вошел -->
                 <div class="auth nav-links">
-                    <a class="login-btn" id="loginBtn" href="{{ url_for('login') }}">Войти</a>
-                    <a class="reg-btn" id="regBtn" href="{{ url_for('register') }}">Зарегистрироваться</a>
+                    <a class="login-btn" id="loginBtn" href="{{ url_for('users.login') }}">Войти</a>
+                    <a class="reg-btn" id="regBtn" href="{{ url_for('users.register') }}">Зарегистрироваться</a>
                 </div>
             {% endif %}
 

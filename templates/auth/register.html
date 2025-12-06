@@ -9,7 +9,7 @@
         <div class="form-section">
             <div class="form-wrapper">
                 <h2 class="form-title">Регистрация</h2>
-                <form class="auth-form" method="POST" action="{{ url_for('register') }}" autocomplete="off">
+                <form class="auth-form" method="POST" action="{{ url_for('users.register') }}" autocomplete="off">
                     <!-- Скрытые поля против автозаполнения -->
                     <input style="display:none" type="text" name="fakeusernameremembered"/>
                     <input style="display:none" type="password" name="fakepasswordremembered"/>
@@ -73,7 +73,7 @@
                 <span id="current-date">1 января 2024</span>
 
                 <div class="form-links">
-                    <a href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a>
+                    <a href="{{ url_for('users.login') }}">Уже есть аккаунт? Войти</a>
                 </div>
             </div>
         </div>

@@ -15,7 +15,7 @@
         <div class="form-section">
             <div class="form-wrapper">
                 <h2 class="form-title">Вход в систему</h2>
-                <form class="auth-form" method="POST" action="{{ url_for('login') }}" autocomplete="off">
+                <form class="auth-form" method="POST" action="{{ url_for('users.login') }}" autocomplete="off">
                     <div class="input-group">
                         <input type="email" name="email" required placeholder="" autocomplete="new-email">
                         <label>Email</label>
@@ -38,7 +38,7 @@
                 </form>
 
                 <div class="form-links">
-                    <a href="{{ url_for('register') }}">Нет аккаунта? Зарегистрироваться</a>
+                    <a href="{{ url_for('users.register') }}">Нет аккаунта? Зарегистрироваться</a>
                     <a>Забыли пароль?</a>
                 </div>
             </div>
