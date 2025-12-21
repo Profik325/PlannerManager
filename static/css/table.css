@@ -1,0 +1,585 @@
+/* Основной контейнер приложения (не таблицы) */
+.main-content {
+    max-width: 98%;        /* Максимальная ширина контента */
+    min-height: calc(100vh - 200px);        /* Минимальная высота */
+    margin: 2rem auto;        /* Отступ сверху-снизу 2rem, по центру */
+    padding: 0 0rem;          /* Отступы слева-справа */
+    background: transparent;   /* Прозрачный фон */
+    border-radius: 10px;      /* Закругленные углы */
+}
+
+/* ===== КАЛЕНДАРЬ ТАБЛИЦА ===== */
+.week-calendar {
+    width: 100%;               /* Ширина 100% родителя */
+    margin: 2rem auto;         /* Центрирование с отступами сверху */
+    background: var(--background_main_color); /* Фон цветом темы */
+    border-radius: 10px;       /* Закругленные углы */
+    overflow: hidden;          /* Скрываем выходящее за скругленные углы */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Тень для объема */
+
+    /* ВАЖНО: фиксированная высота и flex для внутреннего скролла */
+    height: 80vh;             /* 80% высоты экрана */
+    min-height: 600px;        /* Минимум 600px */
+    max-height: 800px;        /* Максимум 800px */
+    display: flex;            /* Flex-контейнер */
+    flex-direction: column;   /* Вертикальное расположение */
+}
+
+/* Панель управления календарем (верхняя строка с кнопками) */
+.calendar-controls {
+    display: grid;                    /* Grid-контейнер */
+    grid-template-columns: 1fr auto 1fr; /* 3 колонки: лево-центр-право */
+    align-items: center;              /* Выравнивание по вертикали */
+    padding: 15px 20px;               /* Внутренние отступы */
+    background: transparent;          /* Прозрачный фон */
+    border-bottom: 2px solid transparent; /* Прозрачная граница снизу */
+    flex-shrink: 0;                   /* НЕ сжимается при скролле */
+}
+
+/* Контейнер для выбора недели */
+.week-selector {
+    display: flex;          /* Flex-контейнер */
+    justify-self: start;    /* Прижимаем к левому краю grid-ячейки */
+    align-items: center;    /* Выравнивание по вертикали */
+    gap: 10px;              /* Расстояние между элементами */
+}
+
+/* Выпадающий список выбора недели */
+.week-dropdown {
+    padding: 8px 15px;                         /* Внутренние отступы */
+    border: 2px solid var(--gradient_color_2_theme); /* Граница цветом темы */
+    border-radius: 5px;                        /* Закругленные углы */
+    background: rgba(0, 0, 0, 0.3);           /* Полупрозрачный черный фон */
+    color: white;                              /* Белый текст */
+    cursor: pointer;                           /* Курсор-указатель */
+    font-weight: 600;                          /* Жирный шрифт */
+    backdrop-filter: blur(10px);               /* Размытие фона */
+}
+
+/* Опции в выпадающем списке */
+.week-dropdown option {
+    background: var(--background_main_color);  /* Фон цветом темы */
+    color: white;                              /* Белый текст */
+}
+
+/* Кнопки навигации (влево/вправо) */
+.nav-btn {
+    background: var(--gradient_color_2_theme); /* Фон цветом темы */
+    color: white;                              /* Белый текст */
+    border: none;                              /* Без границы */
+    width: 35px;                               /* Фиксированная ширина */
+    height: 35px;                              /* Фиксированная высота */
+    border-radius: 50%;                        /* Круглая кнопка */
+    cursor: pointer;                           /* Курсор-указатель */
+    display: flex;                             /* Flex для центрирования */
+    align-items: center;                       /* Центрирование по вертикали */
+    justify-content: center;                   /* Центрирование по горизонтали */
+    font-size: 18px;                           /* Размер шрифта */
+    transition: all 0.3s;                      /* Плавные переходы */
+    box-shadow: 0 4px 10px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Состояние при наведении на кнопку навигации */
+.nav-btn:hover {
+    background: var(--gradient_color_2_darkened_theme); /* Темнее фон */
+    transform: scale(1.05);                     /* Увеличение на 5% */
+}
+
+/* Текст с диапазоном дат */
+.date-range {
+    justify-self: center;    /* По центру grid-ячейки */
+    font-weight: 600;        /* Жирный шрифт */
+    font-size: 18px;         /* Размер шрифта */
+    color: white;            /* Белый цвет */
+    text-shadow: var(--text-shadow-primary); /* Тень текста */
+}
+
+/* Кнопка "Сегодня" */
+.btn-today {
+    justify-self: end;       /* К правому краю grid-ячейки */
+    padding: 8px 20px;       /* Внутренние отступы */
+    background: var(--gradient_color_2_theme); /* Фон цветом темы */
+    color: white;            /* Белый текст */
+    border: none;            /* Без границы */
+    border-radius: 5px;      /* Закругленные углы */
+    cursor: pointer;         /* Курсор-указатель */
+    font-weight: 600;        /* Жирный шрифт */
+    transition: all 0.3s;    /* Плавные переходы */
+    box-shadow: 0 4px 10px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Состояние при наведении на кнопку "Сегодня" */
+.btn-today:hover {
+    background: var(--gradient_color_2_darkened_theme); /* Темнее фон */
+    transform: translateY(-2px);                /* Подъем кнопки */
+}
+
+/* ===== ЗАГОЛОВОК КАЛЕНДАРЯ (дни недели) ===== */
+.calendar-header {
+    display: grid;                             /* Grid-контейнер */
+    grid-template-columns: 100px repeat(7, minmax(120px, 1fr)); /* 100px для времени + 7 колонок */
+    background: var(--gradient_color_1_darkened_theme); /* Градиентный фон темы */
+    color: white;                              /* Белый текст */
+    height: 80px;                              /* Фиксированная высота */
+    box-shadow: 0 4px 10px var(--color_theme_shadow_rgba); /* Тень */
+    flex-shrink: 0;                            /* НЕ сжимается при скролле */
+}
+
+/* Колонка с временем (самая левая) */
+.time-column {
+    display: flex;                             /* Flex для центрирования */
+    align-items: center;                       /* Центрирование по вертикали */
+    justify-content: center;                   /* Центрирование по горизонтали */
+    font-weight: 600;                          /* Жирный шрифт */
+    border-right: 2px solid rgba(255, 255, 255, 0.3); /* Правая граница */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+    font-size: 16px;                           /* Размер шрифта */
+}
+
+/* Заголовок дня (Пн, Вт и т.д.) */
+.day-header {
+    display: flex;                             /* Flex-контейнер */
+    flex-direction: column;                    /* Колонка (вертикально) */
+    align-items: center;                       /* Центрирование по горизонтали */
+    justify-content: center;                   /* Центрирование по вертикали */
+    cursor: pointer;                           /* Курсор-указатель */
+    transition: all 0.3s;                      /* Плавные переходы */
+    padding: 0px 0;                           /* Отступы сверху-снизу */
+    border-right: 2px solid rgba(255, 255, 255, 0.3); /* Правая граница */
+}
+
+/* Стиль для сегодняшнего дня */
+.day-header.today {
+    background: transparent; /* var(color_1_theme_rgba);     /* Более яркий фон */
+    box-shadow: inset 0 0 20px var(--color_2_theme_rgba); /* Внутренняя тень */
+}
+
+/* Состояние при наведении на день */
+.day-header:hover {
+    background: rgba(255, 255, 255, 0.15);     /* Полупрозрачный белый фон */
+    backdrop-filter: blur(5px);                /* Размытие фона */
+}
+
+/* Название дня (Пн, Вт и т.д.) */
+.day-name {
+    font-size: 16px;                           /* Размер шрифта */
+    font-weight: 500;                          /* Средняя жирность */
+    margin-bottom: 5px;                        /* Отступ снизу */
+    text-shadow: var(--text-shadow-secondary); /* Тень текста */
+}
+
+/* Дата дня (число) */
+.day-date {
+    font-size: 22px;                           /* Большой шрифт */
+    font-weight: 700;                          /* Жирный шрифт */
+    text-shadow: var(--text-shadow-glow);      /* Свечение текста */
+}
+
+/* ===== ОСНОВНАЯ СЕТКА КАЛЕНДАРЯ ===== */
+.calendar-grid {
+    display: grid;                             /* Grid-контейнер */
+    grid-template-columns: 100px repeat(7, minmax(120px, 1fr)); /* 100px для времени + 7 колонок */
+    grid-auto-rows: 60px;                      /* Автоматическая высота строк 60px */
+    background: transparent;                   /* Прозрачный фон */
+
+    /* ВАЖНО: flex-grow и скролл */
+    flex: 1;                                   /* Занимает всё оставшееся пространство */
+    min-height: 0;                             /* КРИТИЧЕСКИ ВАЖНО для flex-скролла */
+    overflow-y: auto;                          /* ВЕРТИКАЛЬНЫЙ СКРОЛЛ ВНУТРИ ТАБЛИЦЫ */
+
+    /* Скрываем скроллбар для красоты */
+    scrollbar-width: none;                     /* Firefox */
+}
+
+/* Скрываем скроллбар в Chrome/Safari */
+.calendar-grid::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+/* ===== КОЛОНКА С ВРЕМЕНЕМ (левая часть) ===== */
+.time-labels {
+    display: grid;                             /* Grid-контейнер */
+    grid-template-rows: repeat(24, 60px);      /* 24 строки по 60px каждая */
+    background: transparent;                   /* Прозрачный фон */
+}
+
+/* Ячейка времени (00:00, 01:00 и т.д.) */
+.time-label {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Нижняя граница */
+    border-right: 2px solid rgba(255, 255, 255, 0.3);  /* Правая граница */
+    padding: 5px;                              /* Внутренние отступы */
+    font-size: 14px;                           /* Размер шрифта */
+    color: white;                              /* Белый текст */
+    display: flex;                             /* Flex для центрирования */
+    align-items: center;                       /* Центрирование по вертикали */
+    justify-content: center;                   /* Центрирование по горизонтали */
+    font-weight: 500;                          /* Средняя жирность */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+}
+
+/* ===== КОЛОНКА ДНЯ (одна из 7) ===== */
+.day-column {
+    display: grid;                             /* Grid-контейнер */
+    grid-template-rows: repeat(24, 60px);      /* 24 строки по 60px каждая */
+}
+
+/* ===== ЯЧЕЙКА ВРЕМЕНИ (один час) ===== */
+.time-slot {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);  /* Правая граница */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Нижняя граница */
+    position: relative;                        /* Для позиционирования кнопки + */
+    transition: all 0.2s;                      /* Плавные переходы */
+    background: rgba(255, 255, 255, 0.05);     /* Полупрозрачный белый фон */
+    height: 60px;                              /* Фиксированная высота 60px */
+}
+
+/* Состояние при наведении на ячейку времени */
+.time-slot:hover {
+    background: rgba(255, 255, 255, 0.1);      /* Более светлый фон */
+}
+
+/* Стиль для текущего времени */
+.time-slot.current-time {
+    background: var(--color_2_theme_rgba);     /* Цвет темы с прозрачностью */
+    box-shadow: inset 0 0 15px var(--gradient_color_2_darkened_theme); /* Внутренняя тень */
+}
+
+/* Кнопка добавления события (+) */
+.add-event-btn {
+    position: absolute;                        /* Абсолютное позиционирование */
+    top: 5px;                                  /* Отступ сверху */
+    right: 5px;                                /* Отступ справа */
+    width: 24px;                               /* Ширина */
+    height: 24px;                              /* Высота */
+    border: none;                              /* Без границы */
+    background: var(--gradient_color_2_theme); /* Фон цветом темы */
+    color: white;                              /* Белый текст */
+    border-radius: 50%;                        /* Круглая кнопка */
+    cursor: pointer;                           /* Курсор-указатель */
+    opacity: 0;                                /* Скрыта по умолчанию */
+    font-size: 18px;                           /* Размер шрифта */
+    display: flex;                             /* Flex для центрирования */
+    align-items: center;                       /* Центрирование по вертикали */
+    justify-content: center;                   /* Центрирование по горизонтали */
+    transition: all 0.3s;                      /* Плавные переходы */
+    box-shadow: 0 2px 8px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Показывать кнопку + при наведении на ячейку */
+.time-slot:hover .add-event-btn {
+    opacity: 1;                                /* Показать кнопку */
+    transform: scale(1.1);                     /* Увеличение на 10% */
+}
+
+/* Состояние при наведении на кнопку + */
+.add-event-btn:hover {
+    background: var(--gradient_color_2_darkened_theme); /* Темнее фон */
+    transform: scale(1.2) !important;          /* Увеличение на 20% */
+}
+
+/* ===== СОБЫТИЕ В КАЛЕНДАРЕ ===== */
+.event {
+    position: absolute;                        /* Абсолютное позиционирование */
+    left: 2px;                                 /* Отступ слева */
+    right: 2px;                                /* Отступ справа */
+    top: 2px;                                  /* Отступ сверху */
+    bottom: 2px;                               /* Отступ снизу */
+    background: linear-gradient(135deg,        /* Градиентный фон */
+        var(--gradient_color_1_theme),
+        var(--gradient_color_2_theme));
+    border-radius: 4px;                        /* Закругленные углы */
+    padding: 6px;                              /* Внутренние отступы */
+    font-size: 13px;                           /* Размер шрифта */
+    overflow: hidden;                          /* Скрыть выходящий текст */
+    cursor: pointer;                           /* Курсор-указатель */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Белая полупрозрачная граница */
+    box-shadow: 0 2px 8px var(--color_theme_shadow_rgba); /* Тень */
+    transition: all 0.3s;                      /* Плавные переходы */
+}
+
+/* Состояние при наведении на событие */
+.event:hover {
+    transform: translateY(-1px);               /* Подъем на 1px */
+    box-shadow: 0 4px 12px var(--color_theme_shadow_rgba); /* Более выраженная тень */
+    filter: brightness(110%);                  /* Увеличение яркости */
+}
+
+/* Время события */
+.event-time {
+    font-weight: 700;                          /* Жирный шрифт */
+    display: block;                            /* Блочный элемент */
+    margin-bottom: 2px;                        /* Отступ снизу */
+    color: white;                              /* Белый текст */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+    font-size: 11px;                           /* Размер шрифта */
+}
+
+/* Название события */
+.event-title {
+    display: block;                            /* Блочный элемент */
+    white-space: nowrap;                       /* Не переносить текст */
+    overflow: hidden;                          /* Скрыть выходящий текст */
+    text-overflow: ellipsis;                   /* Троеточие если текст не помещается */
+    color: white;                              /* Белый текст */
+    font-weight: 600;                          /* Жирный шрифт */
+    text-shadow: var(--text-shadow-secondary); /* Тень текста */
+    font-size: 12px;                           /* Размер шрифта */
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО (для создания события) ===== */
+.modal {
+    display: none;                             /* Скрыто по умолчанию */
+    position: fixed;                           /* Фиксированное позиционирование */
+    top: 0;                                    /* Вверху экрана */
+    left: 0;                                   /* Слева экрана */
+    width: 100%;                               /* На всю ширину */
+    height: 100%;                              /* На всю высоту */
+    background: rgba(0, 0, 0, 0.7);           /* Полупрозрачный черный фон */
+    z-index: 1000;                             /* Поверх всего */
+    align-items: center;                       /* Центрирование по вертикали */
+    justify-content: center;                   /* Центрирование по горизонтали */
+    backdrop-filter: blur(5px);                /* Размытие фона под окном */
+}
+
+/* Контент модального окна */
+.modal-content {
+    background: linear-gradient(135deg,        /* Градиентный фон */
+        var(--gradient_color_1_darkened_theme),
+        var(--background_main_color));
+    padding: 30px;                             /* Внутренние отступы */
+    border-radius: 15px;                       /* Закругленные углы */
+    min-width: 400px;                          /* Минимальная ширина */
+    max-width: 500px;                          /* Максимальная ширина */
+    border: 3px solid var(--gradient_color_2_theme); /* Граница цветом темы */
+    box-shadow: 0 10px 40px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Заголовок модального окна */
+.modal-content h3 {
+    color: white;                              /* Белый текст */
+    margin-bottom: 25px;                       /* Отступ снизу */
+    text-align: center;                        /* Центрирование текста */
+    font-size: 24px;                           /* Размер шрифта */
+    text-shadow: var(--text-shadow-glow);      /* Свечение текста */
+}
+
+/* Группа полей формы */
+.form-group {
+    margin-bottom: 20px;                       /* Отступ снизу */
+}
+
+/* Метка поля формы */
+.form-group label {
+    display: block;                            /* Блочный элемент */
+    margin-bottom: 8px;                        /* Отступ снизу */
+    font-weight: 600;                          /* Жирный шрифт */
+    color: white;                              /* Белый текст */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+}
+
+/* Поля ввода формы */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;                               /* На всю ширину */
+    padding: 10px 15px;                        /* Внутренние отступы */
+    border: 2px solid var(--gradient_color_2_theme); /* Граница цветом темы */
+    border-radius: 8px;                        /* Закругленные углы */
+    background: rgba(255, 255, 255, 0.1);      /* Полупрозрачный белый фон */
+    color: white;                              /* Белый текст */
+    font-size: 16px;                           /* Размер шрифта */
+    transition: all 0.3s;                      /* Плавные переходы */
+}
+
+/* Состояние при фокусе на поле */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;                             /* Убрать стандартный outline */
+    border-color: var(--gradient_color_2_darkened_theme); /* Темнее граница */
+    background: rgba(255, 255, 255, 0.15);     /* Более светлый фон */
+    box-shadow: 0 0 15px var(--color_2_theme_rgba); /* Свечение */
+}
+
+/* Плейсхолдер в полях ввода */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);           /* Полупрозрачный белый */
+}
+
+/* Контейнер для кнопок модального окна */
+.modal-buttons {
+    display: flex;                             /* Flex-контейнер */
+    gap: 15px;                                 /* Расстояние между кнопками */
+    justify-content: flex-end;                 /* Кнопки справа */
+    margin-top: 30px;                          /* Отступ сверху */
+}
+
+/* Кнопка Сохранить и Отмена */
+.btn-save,
+.btn-cancel {
+    padding: 12px 25px;                        /* Внутренние отступы */
+    border: none;                              /* Без границы */
+    border-radius: 8px;                        /* Закругленные углы */
+    cursor: pointer;                           /* Курсор-указатель */
+    font-weight: 600;                          /* Жирный шрифт */
+    font-size: 16px;                           /* Размер шрифта */
+    transition: all 0.3s;                      /* Плавные переходы */
+    min-width: 100px;                          /* Минимальная ширина */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+}
+
+/* Конкретно кнопка Сохранить */
+.btn-save {
+    background: linear-gradient(135deg,        /* Градиентный фон */
+        var(--gradient_color_2_theme),
+        var(--gradient_color_2_darkened_theme));
+    color: white;                              /* Белый текст */
+    box-shadow: 0 4px 15px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Состояние при наведении на Сохранить */
+.btn-save:hover {
+    transform: translateY(-3px);               /* Подъем кнопки */
+    box-shadow: 0 6px 20px var(--color_theme_shadow_rgba); /* Более выраженная тень */
+}
+
+/* Конкретно кнопка Отмена */
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);      /* Полупрозрачный белый фон */
+    color: white;                              /* Белый текст */
+    border: 2px solid var(--gradient_color_1_theme); /* Граница цветом темы */
+}
+
+/* Состояние при наведении на Отмена */
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.2);      /* Более светлый фон */
+    transform: translateY(-3px);               /* Подъем кнопки */
+}
+
+/* ===== АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ ===== */
+@media (max-width: 1200px) {
+    /* Уменьшаем ширину колонки времени */
+    .calendar-header {
+        grid-template-columns: 80px repeat(7, 1fr);
+    }
+
+    .calendar-grid {
+        grid-template-columns: 80px repeat(7, 1fr);
+    }
+
+    .time-column {
+        font-size: 14px;                       /* Меньший шрифт */
+    }
+
+    .day-name {
+        font-size: 14px;                       /* Меньший шрифт */
+    }
+
+    .day-date {
+        font-size: 18px;                       /* Меньший шрифт */
+    }
+}
+
+/* ===== АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ===== */
+@media (max-width: 768px) {
+    /* Корректируем высоту календаря */
+    .week-calendar {
+        height: 70vh;                          /* Меньшая высота */
+        min-height: 500px;                     /* Меньший минимум */
+        margin: 1rem auto;                     /* Меньшие отступы */
+    }
+
+    /* Меняем направление панели управления */
+    .calendar-controls {
+        grid-template-columns: 1fr;            /* Одна колонка */
+        grid-template-rows: auto auto auto;    /* Три строки */
+        gap: 10px;                             /* Расстояние между элементами */
+        padding: 10px;                         /* Меньшие отступы */
+    }
+
+    .week-selector {
+        justify-self: center;                  /* По центру */
+        order: 1;                              /* Первая строка */
+    }
+
+    .date-range {
+        order: 2;                              /* Вторая строка */
+        text-align: center;
+    }
+
+    .btn-today {
+        justify-self: center;                  /* По центру */
+        order: 3;                              /* Третья строка */
+    }
+
+    /* Уменьшаем заголовок */
+    .calendar-header {
+        height: 50px;                          /* Меньшая высота */
+        grid-template-columns: 60px repeat(7, 1fr); /* Уже колонка времени */
+    }
+
+    .calendar-grid {
+        grid-template-columns: 60px repeat(7, 1fr); /* Уже колонка времени */
+    }
+
+    .time-labels {
+        grid-template-rows: repeat(24, 50px);  /* Меньшие строки */
+    }
+
+    .day-column {
+        grid-template-rows: repeat(24, 50px);  /* Меньшие строки */
+    }
+
+    .time-slot {
+        height: 50px;                          /* Меньшая высота */
+    }
+
+    .time-label {
+        font-size: 12px;                       /* Меньший шрифт */
+    }
+
+    /* Адаптируем модальное окно */
+    .modal-content {
+        min-width: 90vw;                       /* 90% ширины экрана */
+        padding: 20px;                         /* Меньшие отступы */
+    }
+}
+
+/* ===== АНИМАЦИЯ ПОЯВЛЕНИЯ ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;                            /* Полностью прозрачно */
+        transform: translateY(20px);           /* Сдвинуто вниз */
+    }
+    to {
+        opacity: 1;                            /* Полностью видимо */
+        transform: translateY(0);              /* На своем месте */
+    }
+}
+
+/* Применяем анимацию к календарю */
+.week-calendar {
+    animation: fadeIn 0.5s ease-out;           /* Анимация 0.5 секунд */
+}
+
+/* Дополнительный стиль для скролла если нужно показать */
+.calendar-grid.show-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gradient_color_2_theme) transparent;
+}
+
+.calendar-grid.show-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    display: block;
+}
+
+.calendar-grid.show-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.calendar-grid.show-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--gradient_color_2_theme);
+    border-radius: 4px;
+}

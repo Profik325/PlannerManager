@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Планировщик-календарь событий/мероприятий">
     <title>{% block title %}Планировщик мероприятий{% endblock %}</title>
+    {% block css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% endblock %}
 </head>
 
 <!-- body -->
@@ -24,6 +26,9 @@
                     </label>
                 </div>
             </h1>
+
+            {% block navbar %}
+            {% endblock %}
 
             {% if current_user.is_authenticated %}
                 <!-- Если пользователь вошел -->

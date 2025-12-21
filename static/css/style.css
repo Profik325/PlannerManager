@@ -373,7 +373,7 @@ body {
 }
 
 .logout-btn {
-    color: var(--gradient_color_2_theme);
+    color: white;
     padding: 5px 40px; /* Внутренние отступы вместо фиксированной ширины */
     position: relative;
     display: flex; /* или inline-flex */

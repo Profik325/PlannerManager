@@ -21,7 +21,7 @@ def load_user(user_id):
 @users.route('/login', methods=['GET', 'POST']) # теперь users.route
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     if request.method == 'POST':
         email = request.form['email']
@@ -36,7 +36,9 @@ def login():
             next_page = request.args.get('next')
             flash('Вход выполнен!', 'success')
 
-            return redirect(next_page) if next_page else redirect(url_for('home.index')) # тут теперь home.index, по блупринту
+            return redirect(next_page) if next_page else redirect(url_for('main.index')) # тут теперь home.index, по блупринту
+                                                                                         # не home, а main, по имени блупринта, а не переменной
+                                                                                         # я все исправил если что
         else:
             flash('Неверный email или пароль', 'error')
 
@@ -109,4 +111,4 @@ def recover_password():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('home.index'))
+    return redirect(url_for('main.index'))

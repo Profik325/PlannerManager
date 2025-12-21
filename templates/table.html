@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+
+{% block content %}
+<div class="week-calendar">
+    <!-- Верхняя панель управления -->
+    <div class="calendar-controls">
+        <div class="week-selector">
+            <button class="nav-btn prev-week">◀</button>
+            <button class="nav-btn next-week">▶</button>
+            <!-- <select class="week-dropdown">
+                <option value="current">Текущая неделя</option>
+                <option value="2024-12-02">2-8 декабря 2024</option>
+                <option value="2024-12-09">9-15 декабря 2024</option>
+                <option value="2024-12-16">16-22 декабря 2024</option>
+            </select> -->
+        </div>
+        <div class="date-range">
+            <span id="currentWeekRange">2-8 декабря 2024</span>
+        </div>
+        <button class="btn-today">Сегодня</button>
+    </div>
+
+    <!-- Заголовок с днями недели -->
+    <div class="calendar-header">
+        <div class="time-column">Время</div>
+        {% for day in week_days %}
+        <div class="day-header" data-date="{{ day.date }}">
+            <div class="day-name">{{ day.name }}</div>
+            <div class="day-date">{{ day.date }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Основная сетка -->
+    <div class="calendar-grid">
+        <!-- Часы слева -->
+        <div class="time-labels">
+            {% for hour in range(24) %}
+            <div class="time-label">{{ "%02d"|format(hour) }}:00</div>
+            {% endfor %}
+        </div>
+
+        <!-- Дни недели -->
+        {% for day in week_days %}
+        <div class="day-column" data-date="{{ day.date }}">
+            {% for hour in range(24) %}
+            <div class="time-slot"
+                 data-date="{{ day.date }}"
+                 data-hour="{{ hour }}"
+                 data-datetime="{{ day.date }} {{ '%02d'|format(hour) }}:00">
+
+                <!-- Кнопка добавления события -->
+                <button class="add-event-btn"
+                        data-date="{{ day.date }}"
+                        data-hour="{{ hour }}">
+                    +
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно для создания события -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <h3>Создать событие</h3>
+        <form id="eventForm">
+            <input type="hidden" id="eventDate" name="date">
+            <input type="hidden" id="eventHour" name="hour">
+
+            <div class="form-group">
+                <label>Название:</label>
+                <input type="text" id="eventTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label>Описание:</label>
+                <textarea id="eventDescription"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Время начала:</label>
+                <input type="time" id="eventStartTime" required>
+            </div>
+
+            <div class="form-group">
+                <label>Длительность:</label>
+                <select id="eventDuration">
+                    <option value="30">30 минут</option>
+                    <option value="60" selected>1 час</option>
+                    <option value="90">1.5 часа</option>
+                    <option value="120">2 часа</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Цвет:</label>
+                <input type="color" id="eventColor" value="#4a6fa5">
+            </div>
+
+            <div class="modal-buttons">
+                <button type="submit" class="btn-save">Сохранить</button>
+                <button type="button" class="btn-cancel">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/table.js') }}"></script>
+{% endblock %}
