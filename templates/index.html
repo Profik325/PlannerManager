@@ -1,19 +1,118 @@
 {% extends "base.html" %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="dashboard">
     <div class="welcome-section">
-        <h1>Добро пожаловать в Планировщик!</h1>
-        <p>Организуйте ваши мероприятия и встречи в одном месте</p>
+        <div class="welcome-left">
+            <h1 class="welcome-left">Добро пожаловать в Dayfall!</h1>
+            <p class="welcome-left">Организуйте ваши мероприятия и встречи в одном месте</p>
+        </div>
         <div class="action-buttons">
+            <button class="btn btn-create-table">Создать таблицу</button>
         </div>
     </div>
 
-    <div class="recent-events">
-        <h2>Ближайшие события</h2>
-        <div class="events-placeholder">
-            <p>Здесь будут отображаться ваши ближайшие события</p>
-        </div>
+    <div class="tables">
+        <h2>Ваши таблицы</h2>
+
+        {% if has_tables %}
+            <!-- Показываем таблицы -->
+            <div class="tables-grid">
+                {% for table in tables %}
+                <div class="table-card" data-table-id="{{ table.id }}">
+                    <div class="table-header">
+                        <h3>{{ table.title }}</h3>
+                        <!--<span class="table-date">
+                            Создано: {{ table.created_at.strftime('%d.%m.%Y') }}
+                        </span>-->
+                    </div>
+
+                    <div class="table-description">
+                        {% if table.description %}
+                            <p>{{ table.description[:100] }}{% if table.description|length > 100 %}...{% endif %}</p>
+                        {% else %}
+                            <p class="text-muted"></p>
+                        {% endif %}
+                    </div>
+
+                    <div class="table-stats">
+                        <span class="stat">
+                            Событий: {{ table.events.count() if table.events else 0 }}
+                        </span>
+                    </div>
+
+                    <div class="table-actions">
+                        <a href="{{ url_for('main.calendar', table_id=table.id) }}"
+                           class="btn btn-outline">Открыть</a>
+                        <button class="btn btn-icon" title="Настройки"></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Кнопка "Еще таблицы", если их много
+            {% if tables|length >= 6 %}
+            <div class="text-center mt-4">
+                <a href="{{ url_for('main.all_tables') }}" class="btn btn-secondary">
+                    Показать все таблицы ({{ tables|length }})
+                </a>
+            </div>
+            {% endif %}-->
+
+        {% else %}
+            <!-- Показываем заглушку, если таблиц нет -->
+            <div class="empty-state">
+                <h3>У вас еще нет таблиц</h3>
+                <p>Создайте свою первую таблицу для планирования мероприятий!</p>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<!-- Модальное окно для создания события -->
+<div id="tableModal" class="modal">
+    <div class="modal-content">
+        <h3>Создать таблицу</h3>
+        <form id="tableForm">
+            <div class="form-group">
+                <label>Название:</label>
+                <input type="text" id="tableTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label>Описание:</label>
+                <textarea id="tableDescription"></textarea>
+            </div>
+
+            <div class="checkboxes">
+                <label class="is-private">
+                    <input type="checkbox" id="privacyToggle">
+                </label>
+                <!--<label class="is-cycled">
+                    <input type="checkbox" id="cycleToggle">
+                </label>-->
+
+            </div>
+
+            <div class="modal-buttons">
+                <button type="submit" class="btn-save">Сохранить</button>
+                <button type="button" class="btn-cancel">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}

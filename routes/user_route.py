@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request, jsonify, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import current_user, login_required, login_user, logout_user
 
-from data.db_session import create_session
 from extensions import login_manager
 from data import db_session
 from data.models.user import User
@@ -35,7 +34,7 @@ def login():
             login_user(user, remember=True)
             next_page = request.args.get('next')
             flash('Вход выполнен!', 'success')
-
+            session['user_id'] = user.id
             return redirect(next_page) if next_page else redirect(url_for('main.index')) # тут теперь home.index, по блупринту
                                                                                          # не home, а main, по имени блупринта, а не переменной
                                                                                          # я все исправил если что
@@ -49,7 +48,7 @@ def login():
 @users.route('/register', methods=['GET', 'POST'])
 def register(): # регистрацию и восстановление пароля я не трогала, пока работать не будет
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     if request.method == 'POST':
         email = request.form['email']
@@ -102,13 +101,14 @@ def recover_password():
 
 
 
-        return redirect(url_for('login'))
+        return redirect(url_for('users.login'))
 
     return render_template('auth/recover-password.html')
 
 #Выход из аккаунта
-@users.route('/logout') #переделана
+@users.route('/logout')
 @login_required
 def logout():
     logout_user()
+    session['user_id'] = 0
     return redirect(url_for('main.index'))

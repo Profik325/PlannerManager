@@ -1,11 +1,23 @@
 /* Основной контейнер приложения (не таблицы) */
 .main-content {
     max-width: 98%;        /* Максимальная ширина контента */
-    min-height: calc(100vh - 200px);        /* Минимальная высота */
+    min-height: 1440px;        /* Минимальная высота */
     margin: 2rem auto;        /* Отступ сверху-снизу 2rem, по центру */
     padding: 0 0rem;          /* Отступы слева-справа */
     background: transparent;   /* Прозрачный фон */
     border-radius: 10px;      /* Закругленные углы */
+}
+
+.navbar h3 {
+    margin: auto auto;
+    color: var(--gradient_color_2_darkened_theme);
+    text-weight: 600;
+    text-size: 2rem;
+    filter: drop-shadow(var(--text-shadow-primary))
+            drop-shadow(var(--text-shadow-secondary))
+            drop-shadow(var(--text-shadow-glow));
+    justify-self: center;
+
 }
 
 /* ===== КАЛЕНДАРЬ ТАБЛИЦА ===== */
@@ -39,57 +51,217 @@
 /* Контейнер для выбора недели */
 .week-selector {
     display: flex;          /* Flex-контейнер */
-    justify-self: start;    /* Прижимаем к левому краю grid-ячейки */
-    align-items: center;    /* Выравнивание по вертикали */
+    justify-self: start;    /* Прижимаем к центру  grid-ячейки */
+    /*align-items: center;     Выравнивание по вертикали */
     gap: 10px;              /* Расстояние между элементами */
+    margin-right: 10%;
 }
 
-/* Выпадающий список выбора недели */
-.week-dropdown {
-    padding: 8px 15px;                         /* Внутренние отступы */
-    border: 2px solid var(--gradient_color_2_theme); /* Граница цветом темы */
-    border-radius: 5px;                        /* Закругленные углы */
-    background: rgba(0, 0, 0, 0.3);           /* Полупрозрачный черный фон */
-    color: white;                              /* Белый текст */
-    cursor: pointer;                           /* Курсор-указатель */
-    font-weight: 600;                          /* Жирный шрифт */
-    backdrop-filter: blur(10px);               /* Размытие фона */
-}
-
-/* Опции в выпадающем списке */
-.week-dropdown option {
-    background: var(--background_main_color);  /* Фон цветом темы */
-    color: white;                              /* Белый текст */
-}
-
-/* Кнопки навигации (влево/вправо) */
+/* Кнопки навигации с SVG */
 .nav-btn {
-    background: var(--gradient_color_2_theme); /* Фон цветом темы */
-    color: white;                              /* Белый текст */
+    background: none;                          /* Прозрачный фон */
     border: none;                              /* Без границы */
-    width: 35px;                               /* Фиксированная ширина */
-    height: 35px;                              /* Фиксированная высота */
-    border-radius: 50%;                        /* Круглая кнопка */
+    width: 45px;                               /* Ширина кнопки */
+    height: 45px;                              /* Высота кнопки */
     cursor: pointer;                           /* Курсор-указатель */
-    display: flex;                             /* Flex для центрирования */
+    position: relative;                        /* Для псевдоэлементов */
+    padding: 0;                                /* Убираем отступы */
+    display: flex;                             /* Центрирование SVG */
     align-items: center;                       /* Центрирование по вертикали */
     justify-content: center;                   /* Центрирование по горизонтали */
-    font-size: 18px;                           /* Размер шрифта */
-    transition: all 0.3s;                      /* Плавные переходы */
-    box-shadow: 0 4px 10px var(--color_theme_shadow_rgba); /* Тень */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Плавная анимация */
+    overflow: visible;                         /* Чтобы тени не обрезались */
 }
 
-/* Состояние при наведении на кнопку навигации */
+/* Внешний треугольник (обводка) через псевдоэлемент
+.nav-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient_color_1_darkened_theme); /* Темная обводка
+    clip-path: polygon(100% 0%, 0% 50%, 100% 100%); /* Треугольник вправо
+    z-index: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 4px 12px var(--color_theme_shadow_rgba),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1); /* Внутреннее свечение
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)); /* Внешняя тень
+}*/
+
+/* Внутренний треугольник (заливка) через псевдоэлемент */
+.nav-btn::after {
+    content: '';
+    position: absolute;
+    top: 3px;                                  /* Отступ от обводки */
+    left: 5px;                                 /* Отступ от обводки */
+    width: calc(100% - 6px);                   /* Уменьшаем для обводки */
+    height: calc(100% - 6px);                  /* Уменьшаем для обводки */
+    background: var(--gradient_color_1_theme);
+        /*linear-gradient(
+        135deg,
+        var(--gradient_color_1_theme),
+        var(--gradient_color_2_theme)*/
+    );                                         /* Градиентная заливка */
+    clip-path: polygon(100% 0%, 0% 50%, 100% 100%); /* Треугольник влево */
+    z-index: 2;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 2px 8px var(--color_theme_shadow_rgba),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Для кнопки "вправо" (зеркалим) */
+/*.nav-btn.next-week::before,*/
+.nav-btn.next-week::after {
+    clip-path: polygon(0% 0%, 100% 50%, 0% 100%); /* Треугольник влево */
+}
+
+.nav-btn.next-week::after {
+    left: 2px;                                /* Корректировка позиции */
+}
+
+/* SVG треугольник (самый внутренний) */
+.nav-btn svg {
+    position: relative;
+    left: -9px;
+    z-index: 3;                                /* Поверх всего */
+    width: 22px;                               /* Размер SVG */
+    height: 22px;                              /* Размер SVG */
+    fill: white;                               /* Заливка белая */
+    /*filter:
+        drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) /* Тень для контраста
+        drop-shadow(0 0 8px rgba(255, 255, 255, 0.3)); /* Свечение */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-btn.prev-week svg {
+    left: 9px;
+}
+
+/* ===== ЭФФЕКТЫ ПРИ НАВЕДЕНИИ ===== */
+
+/* При наведении на кнопку */
 .nav-btn:hover {
-    background: var(--gradient_color_2_darkened_theme); /* Темнее фон */
-    transform: scale(1.05);                     /* Увеличение на 5% */
+    transform: translateY(-2px);               /* Подъем кнопки */
+}
+
+/* Меняем цвет обводки */
+.nav-btn:hover::before {
+    background: var(--gradient_color_1_darkened_theme); /* Темнее */
+    transform: scale(1.05);                    /* Увеличение */
+    box-shadow:
+        0 6px 20px var(--color_theme_shadow_rgba),
+        inset 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Меняем градиент заливки */
+.nav-btn:hover::after {
+    /* background: linear-gradient(
+        135deg,
+        var(--gradient_color_2_theme),
+        var(--gradient_color_1_theme)
+    );                                          Инвертируем градиент */
+    transform: scale(0.95);                    /* Легкое уменьшение */
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 4px 8px var(--color_theme_shadow_rgba),
+        0 8px 16px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* SVG становится ярче и увеличивается */
+.nav-btn:hover svg {
+    /* fill: var(--gradient_color_1_theme);       Меняем цвет на тему */
+    transform: scale(1.2);                     /* Увеличение */
+    /*filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7))
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));*/
+}
+
+/* ===== ЭФФЕКТЫ ПРИ НАЖАТИИ ===== */
+
+.nav-btn:active {
+    transform: translateY(0);                  /* Возвращаем на место */
+}
+
+.nav-btn:active::before {
+    transform: scale(0.98);                    /* Эффект нажатия */
+    box-shadow:
+        0 2px 8px var(--color_theme_shadow_rgba),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn:active::after {
+    transform: scale(0.92);
+}
+
+.nav-btn:active svg {
+    transform: scale(1.1);
+}
+
+/* ===== АНИМАЦИЯ ПУЛЬСАЦИИ =====
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 4px 12px var(--color_theme_shadow_rgba);
+    }
+    50% {
+        box-shadow: 0 4px 20px var(--color_theme_shadow_rgba),
+                    0 0 15px rgba(255, 255, 255, 0.3);
+    }
+    100% {
+        box-shadow: 0 4px 12px var(--color_theme_shadow_rgba);
+    }
+}*/
+
+/* Необязательно: пульсация для привлечения внимания
+.nav-btn.pulse::before {
+    animation: pulse-glow 2s infinite ease-in-out;
+}*/
+
+/* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ SVG ===== */
+
+/* Если хочешь stroke (обводку) у SVG
+.nav-btn svg.stroked {
+    fill: none;
+    stroke: white;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}*/
+
+/* Темная тема корректировки
+[data-theme="dark"] .nav-btn::after {
+    background: linear-gradient(
+        135deg,
+        var(--gradient_color_2_theme),
+        var(--gradient_color_1_theme)
+    );
+}*/
+
+[data-theme="dark"] .nav-btn svg {
+    fill: var(--gradient_color_1_darkened_theme);
+}
+
+/* Делаем кнопки полупрозрачными при достижении лимита */
+.nav-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nav-btn.disabled:hover {
+    transform: none !important;
+    background: inherit !important;
 }
 
 /* Текст с диапазоном дат */
 .date-range {
     justify-self: center;    /* По центру grid-ячейки */
     font-weight: 600;        /* Жирный шрифт */
-    font-size: 18px;         /* Размер шрифта */
+    font-size: 30px;         /* Размер шрифта */
     color: white;            /* Белый цвет */
     text-shadow: var(--text-shadow-primary); /* Тень текста */
 }
@@ -98,7 +270,7 @@
 .btn-today {
     justify-self: end;       /* К правому краю grid-ячейки */
     padding: 8px 20px;       /* Внутренние отступы */
-    background: var(--gradient_color_2_theme); /* Фон цветом темы */
+    background: var(--gradient_color_1_theme); /* Фон цветом темы */
     color: white;            /* Белый текст */
     border: none;            /* Без границы */
     border-radius: 5px;      /* Закругленные углы */
@@ -110,8 +282,8 @@
 
 /* Состояние при наведении на кнопку "Сегодня" */
 .btn-today:hover {
-    background: var(--gradient_color_2_darkened_theme); /* Темнее фон */
-    transform: translateY(-2px);                /* Подъем кнопки */
+    background: var(--gradient_color_1_darkened_theme); /* Темнее фон */
+    transform: translateY(-1.5px);                /* Подъем кнопки */
 }
 
 /* ===== ЗАГОЛОВОК КАЛЕНДАРЯ (дни недели) ===== */
@@ -222,6 +394,8 @@
 .day-column {
     display: grid;                             /* Grid-контейнер */
     grid-template-rows: repeat(24, 60px);      /* 24 строки по 60px каждая */
+    backgroundColor: transparent;
+    boxShadow: transparent;
 }
 
 /* ===== ЯЧЕЙКА ВРЕМЕНИ (один час) ===== */
@@ -328,6 +502,7 @@
 }
 
 /* ===== МОДАЛЬНОЕ ОКНО (для создания события) ===== */
+/* ОКНО СОЗДАНИЯ ТЬАБЛИЦЫ */
 .modal {
     display: none;                             /* Скрыто по умолчанию */
     position: fixed;                           /* Фиксированное позиционирование */
@@ -335,24 +510,29 @@
     left: 0;                                   /* Слева экрана */
     width: 100%;                               /* На всю ширину */
     height: 100%;                              /* На всю высоту */
-    background: rgba(0, 0, 0, 0.7);           /* Полупрозрачный черный фон */
+    background: rgba(0, 0, 0, 0.3);           /* Полупрозрачный черный фон */
     z-index: 1000;                             /* Поверх всего */
-    align-items: center;                       /* Центрирование по вертикали */
-    justify-content: center;                   /* Центрирование по горизонтали */
-    backdrop-filter: blur(5px);                /* Размытие фона под окном */
+    /*align-items: center;                       /* Центрирование по вертикали */
+    /*justify-content: center;                   /* Центрирование по горизонтали */
+    backdrop-filter: blur(1px);                /* Размытие фона под окном */
 }
 
 /* Контент модального окна */
 .modal-content {
-    background: linear-gradient(135deg,        /* Градиентный фон */
-        var(--gradient_color_1_darkened_theme),
-        var(--background_main_color));
+    position: absolute;
+    left: 40px; /* отступ слева */
+    top: 20%; /* отступ сверху */
+    background: var(--gradient_color_1_darkened_theme);
     padding: 30px;                             /* Внутренние отступы */
-    border-radius: 15px;                       /* Закругленные углы */
+    border-radius: 5px;                       /* Закругленные углы */
     min-width: 400px;                          /* Минимальная ширина */
     max-width: 500px;                          /* Максимальная ширина */
     border: 3px solid var(--gradient_color_2_theme); /* Граница цветом темы */
     box-shadow: 0 10px 40px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+.modal.show .modal-content {
+    transform: translateX(20); /* Выдвигается */
 }
 
 /* Заголовок модального окна */
@@ -432,9 +612,7 @@
 
 /* Конкретно кнопка Сохранить */
 .btn-save {
-    background: linear-gradient(135deg,        /* Градиентный фон */
-        var(--gradient_color_2_theme),
-        var(--gradient_color_2_darkened_theme));
+    background: var(--gradient_color_2_theme);
     color: white;                              /* Белый текст */
     box-shadow: 0 4px 15px var(--color_theme_shadow_rgba); /* Тень */
 }

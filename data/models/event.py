@@ -4,7 +4,7 @@ from sqlalchemy import orm
 from data.db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
 
-class Event(SqlAlchemyBase, SerializerMixin):  # Убрали UserMixin
+class Event(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'events'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -15,22 +15,19 @@ class Event(SqlAlchemyBase, SerializerMixin):  # Убрали UserMixin
     table_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('tables.id'), nullable=False)
     creator_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.utcnow)
-    color = sqlalchemy.Column(sqlalchemy.String(7), default='#4a6fa5')  # Для отображения в календаре
-    location = sqlalchemy.Column(sqlalchemy.String(200), nullable=True)  # Место проведения
+    # color = sqlalchemy.Column(sqlalchemy.String(7), default='#4a6fa5')
     
     # Простая логика участников (без отдельной таблицы)
-    participants_list = sqlalchemy.Column(sqlalchemy.Text, default='[]')  # JSON список ID участников
-    max_participants = sqlalchemy.Column(sqlalchemy.Integer, default=0)  # 0 = без ограничений
+    # participants_list = sqlalchemy.Column(sqlalchemy.Text, default='[]')
+    # max_participants = sqlalchemy.Column(sqlalchemy.Integer, default=0)  # 0 = без ограничений
 
     # Связи:
     table = orm.relationship('Table', back_populates='events')
-    creator = orm.relationship('User', back_populates='created_events')
+    # creator = orm.relationship('User', back_populates='created_events')
 
-    # Правила сериализации
     serialize_rules = ('-table', '-creator')
 
-    # Вспомогательные методы для работы с participants_list
-    def get_participants(self):
+    '''def get_participants(self):
         """Получить список ID участников"""
         import json
         return json.loads(self.participants_list)
@@ -70,9 +67,8 @@ class Event(SqlAlchemyBase, SerializerMixin):  # Убрали UserMixin
 
     def user_is_participant(self, user_id):
         """Проверить, является ли пользователь участником"""
-        return user_id in self.get_participants()
+        return user_id in self.get_participants()'''
 
-    # Другие полезные методы
     def get_duration_minutes(self):
         """Получить длительность в минутах"""
         if self.start_time and self.end_time:
@@ -90,12 +86,12 @@ class Event(SqlAlchemyBase, SerializerMixin):  # Убрали UserMixin
             'end_time': self.end_time.isoformat() if self.end_time else None,
             'date': self.start_time.strftime('%Y-%m-%d') if self.start_time else None,
             'color': self.color,
-            'location': self.location,
+            'created_at': self.created_at,
             'creator_id': self.creator_id,
             'table_id': self.table_id,
-            'max_participants': self.max_participants,
-            'participant_count': self.get_participant_count(),
-            'is_full': self.is_full(),
+            # 'max_participants': self.max_participants,
+            # 'participant_count': self.get_participant_count(),
+            # 'is_full': self.is_full(),
             'duration': self.get_duration_minutes()
         }
 

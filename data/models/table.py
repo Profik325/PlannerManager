@@ -1,33 +1,24 @@
 from datetime import datetime
 import sqlalchemy
-from flask_login import UserMixin
 from sqlalchemy import orm
 from data.db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
 
-class Table(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Table(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'tables'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     title = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
     description = sqlalchemy.Column(sqlalchemy.Text)
-    owner_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
+    creator_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.utcnow)
-    #settings = sqlalchemy.Column(sqlalchemy.JSON)  # настройки в формате JSON??
+    # settings = sqlalchemy.Column(sqlalchemy.JSON)  # настройки в формате JSON??
 
     # Связи:
-    # Владелец таблицы
     owner = orm.relationship('User', back_populates='owned_tables')
 
-    # Мероприятия в этой таблице
-    events = orm.relationship('Event', back_populates='table',
-                             lazy='dynamic', cascade='all, delete-orphan')
+    events = orm.relationship('Event', back_populates='table', lazy='dynamic', cascade='all, delete-orphan')
 
-    # Права доступа к этой таблице
-    #permissions = orm.relationship('TablePermission', back_populates='table',
-    #                              lazy='dynamic', cascade='all, delete-orphan')
-
-    # Методы для проверки прав:
     '''def can_view(self, user):
         if user.id == self.owner_id:
             return True

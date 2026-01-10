@@ -47,7 +47,7 @@
     position: fixed;
     top: 10px;
     right: 820px;
-    z-index: 1000;
+    z-index: 100000;
 }
 
 .flash-message {
@@ -98,27 +98,29 @@ body {
     background: linear-gradient(180deg, var(--gradient_color_1_darkened_theme), var(--gradient_color_1_theme));
     background-attachment: fixed;
     min-height: 100vh;
+    overflow-y: auto;
 }
 
 .navbar {
-    padding: 1rem 0;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 1.5rem 0;
 }
 
 .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
+    max-width: 100%;
+    margin: 0 30px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* 3 колонки: лево-центр-право */
     align-items: center;
-    padding: 0 2rem;
+    justify-content: space-between;
 }
 
 .nav-container h1 {
     display: flex;
+    justify-self: start;
     align-items: center;
     font-size: 6rem;
-    margin-left: -333px;
+    margin-right: auto;
     font-weight: 1200;
     font-family: 'Arial Black', Gadget, sans-serif;
     background: linear-gradient(90deg, var(--gradient_color_2_darkened_theme), var(--gradient_color_2_theme));
@@ -133,12 +135,17 @@ body {
             drop-shadow(var(--text-shadow-glow));
 }
 
+.nav-container h3 {
+    justify-self: center;
+}
+
 /* КОНТЕЙНЕР ДЛЯ КНОПОК С ОБЩИМ СОЛНЦЕМ */
 .auth.nav-links {
     display: flex;
     flex-direction: column;
+    justify-self: end;
     gap: 30px;
-    margin-right: -333px;
+    margin-left: auto;
     position: relative;
     min-height: 200px;
     background: transparent;
@@ -267,6 +274,7 @@ body {
     width: 20px;
     height: 73px;
     margin: 0 3px;
+    margin-top: 1px;  Только верхний отступ */
     cursor: pointer;
     vertical-align: middle;
 }
@@ -322,7 +330,7 @@ body {
 
 /* Эффекты при наведении */
 .theme-switcher:hover .slider {
-    transform: scale(1.05);
+    transform: scale(1.0);
     box-shadow: 0 0 15px var(--color_theme_shadow_rgba);
 }
 
@@ -355,7 +363,7 @@ body {
 
 .login-succeed {
     font-weight: 1200;
-    margin-left: 200px;
+    margin-left: auto;
     font-size: 1rem;
     text-shadow: var(--text-shadow-primary),
                  var(--text-shadow-glow);
@@ -366,45 +374,40 @@ body {
 .user-email {
     color: var(--gradient_color_2_theme);
     font-size: 1.3rem;
-    margin-left: 90px;
+    margin-left: auto;
     text-shadow: var(--text-shadow-primary),
                  var(--text-shadow-glow);
     font-family: 'Arial Black', Gadget, sans-serif;
 }
 
 .logout-btn {
-    color: white;
-    padding: 5px 40px; /* Внутренние отступы вместо фиксированной ширины */
-    position: relative;
-    display: flex; /* или inline-flex */
-    align-items: center;
-    justify-content: center;
-    margin-top: 60px;
-    margin-left: 260px; /* Уменьшил отступ */
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    text-decoration: none;
+    padding: 8px 30px;
+    margin-top: 70px;
+    margin-left: auto;
     border-radius: 8px;
-    font-weight: 600;
-    font-size: 1rem; /* Чуть меньше шрифт */
-    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    min-width: 80px; /* Минимальная ширина */
-    white-space: nowrap; /* Запрет переноса текста */
+    background: var(--gradient_color_1_theme); /* 1й цвет темы */
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.2s;
 }
 
-.logout-btn:hover, .logout-btn:focus {
-    /*background: rgba(255, 255, 255, 0.1);*/
-    border-color: rgba(255, 255, 255, 0.5);
+.logout-btn:hover {
+    background: var(--gradient_color_1_darkened_theme:); /* темнее при наведении */
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px var(--color_theme_shadow_rgba);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .logout-btn:active {
-    transform: translateY(1px);
-    box-shadow: 0 5px 10px var(--color_theme_shadow_rgba);
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Осенние листья */
 /* Осенние листья */
 #leaves-container {
     position: fixed;

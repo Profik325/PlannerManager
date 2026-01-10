@@ -1,0 +1,230 @@
+/* Основной контейнер приложения (не таблицы) */
+.main-content {
+    max-width: 90%;        /* Максимальная ширина контента */
+    margin: 2rem auto;        /* Отступ сверху-снизу 2rem, по центру */
+    padding: 0 0rem;          /* Отступы слева-справа */
+    border-radius: 10px;      /* Закругленные углы */
+}
+
+/*flash notications*/
+.flash-messages {
+    position: fixed;
+    top: 10px;
+    right: 820px;
+    z-index: 1000;
+}
+
+.flash-message {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 3s forwards;
+}
+
+.flash-message.success {
+    background: #25bd00;
+}
+
+.flash-message.error {
+    background: #ff4757;
+}
+
+/* main part */
+.welcome-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 15px;
+    padding: 0;
+    gap: 10px;
+}
+
+.welcome-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+}
+
+/* Левый блок (h1 + текст) */
+.welcome-left {
+    display: flex;
+    flex-direction: column; /* ← ВСЁ В КОЛОНКУ! */
+    align-items: center;
+    gap: 6px;
+    margin-right: auto; /* прижимает весь левый блок к левому краю */
+}
+
+/* Кнопка справа */
+.action-buttons {
+    margin-left: auto; /* прижимает к правому краю */
+}
+
+.welcome-section .btn {
+    padding: 12px 24px;
+    margin: 0px 0px;
+    border-radius: 8px;
+    background: var(--gradient_color_1_theme); /* 1й цвет темы */
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.welcome-section .btn:hover {
+    background: var(--gradient_color_1_darkened_theme:); /* темнее при наведении */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-section .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tables {
+    margin: 40px 15px;
+    display: grid;
+    gap: 10px;
+}
+
+.tables h2 {
+    font-size: 2.2rem;
+}
+
+
+/* ОКНО СОЗДАНИЯ ТАБЛИЦЫ */
+.modal {
+    display: none;                             /* Скрыто по умолчанию */
+    position: fixed;                           /* Фиксированное позиционирование */
+    top: 0;                                    /* Вверху экрана */
+    left: 0;                                   /* Слева экрана */
+    width: 100%;                               /* На всю ширину */
+    height: 100%;                              /* На всю высоту */
+    background: rgba(0, 0, 0, 0.3);           /* Полупрозрачный черный фон */
+    z-index: 1000;                             /* Поверх всего */
+    /*align-items: center;                       /* Центрирование по вертикали */
+    /*justify-content: center;                   /* Центрирование по горизонтали */
+    backdrop-filter: blur(1px);                /* Размытие фона под окном */
+}
+
+/* Контент модального окна */
+.modal-content {
+    position: absolute;
+    right: 40px;
+    top: 26%;
+    background: var(--gradient_color_1_darkened_theme);
+    padding: 30px;                             /* Внутренние отступы */
+    border-radius: 5px;                       /* Закругленные углы */
+    min-width: 400px;                          /* Минимальная ширина */
+    max-width: 500px;                          /* Максимальная ширина */
+    border: 3px solid var(--gradient_color_2_theme); /* Граница цветом темы */
+    box-shadow: 0 10px 40px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Заголовок модального окна */
+.modal-content h3 {
+    color: white;                              /* Белый текст */
+    margin-bottom: 25px;                       /* Отступ снизу */
+    text-align: center;                        /* Центрирование текста */
+    font-size: 24px;                           /* Размер шрифта */
+    text-shadow: var(--text-shadow-glow);      /* Свечение текста */
+}
+
+/* Группа полей формы */
+.form-group {
+    margin-bottom: 20px;                       /* Отступ снизу */
+}
+
+/* Метка поля формы */
+.form-group label {
+    display: block;                            /* Блочный элемент */
+    margin-bottom: 8px;                        /* Отступ снизу */
+    font-weight: 600;                          /* Жирный шрифт */
+    color: white;                              /* Белый текст */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+}
+
+/* Поля ввода формы */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;                               /* На всю ширину */
+    padding: 10px 15px;                        /* Внутренние отступы */
+    border: 2px solid var(--gradient_color_2_theme); /* Граница цветом темы */
+    border-radius: 8px;                        /* Закругленные углы */
+    background: rgba(255, 255, 255, 0.1);      /* Полупрозрачный белый фон */
+    color: white;                              /* Белый текст */
+    font-size: 16px;                           /* Размер шрифта */
+    transition: all 0.3s;                      /* Плавные переходы */
+}
+
+/* Состояние при фокусе на поле */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;                             /* Убрать стандартный outline */
+    border-color: var(--gradient_color_2_darkened_theme); /* Темнее граница */
+    background: rgba(255, 255, 255, 0.15);     /* Более светлый фон */
+    box-shadow: 0 0 15px var(--color_2_theme_rgba); /* Свечение */
+}
+
+/* Плейсхолдер в полях ввода */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);           /* Полупрозрачный белый */
+}
+
+/* Контейнер для кнопок модального окна */
+.modal-buttons {
+    display: flex;                             /* Flex-контейнер */
+    gap: 15px;                                 /* Расстояние между кнопками */
+    justify-content: flex-end;                 /* Кнопки справа */
+    margin-top: 30px;                          /* Отступ сверху */
+}
+
+/* Кнопка Сохранить и Отмена */
+.btn-save,
+.btn-cancel {
+    padding: 12px 25px;                        /* Внутренние отступы */
+    border: none;                              /* Без границы */
+    border-radius: 8px;                        /* Закругленные углы */
+    cursor: pointer;                           /* Курсор-указатель */
+    font-weight: 600;                          /* Жирный шрифт */
+    font-size: 16px;                           /* Размер шрифта */
+    transition: all 0.3s;                      /* Плавные переходы */
+    min-width: 100px;                          /* Минимальная ширина */
+    text-shadow: var(--text-shadow-primary);   /* Тень текста */
+}
+
+/* Конкретно кнопка Сохранить */
+.btn-save {
+    background: var(--gradient_color_2_theme);
+    color: white;                              /* Белый текст */
+    box-shadow: 0 4px 15px var(--color_theme_shadow_rgba); /* Тень */
+}
+
+/* Состояние при наведении на Сохранить */
+.btn-save:hover {
+    transform: translateY(-3px);               /* Подъем кнопки */
+    box-shadow: 0 6px 20px var(--color_theme_shadow_rgba); /* Более выраженная тень */
+}
+
+/* Конкретно кнопка Отмена */
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);      /* Полупрозрачный белый фон */
+    color: white;                              /* Белый текст */
+    border: 2px solid var(--gradient_color_1_theme); /* Граница цветом темы */
+}
+
+/* Состояние при наведении на Отмена */
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.2);      /* Более светлый фон */
+    transform: translateY(-3px);               /* Подъем кнопки */
+}

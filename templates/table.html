@@ -13,7 +13,9 @@
 {% endblock %}
 
 {% block navbar %}
-
+<h3 id="tableName">
+    Название таблицы
+</h3>
 {% endblock %}
 
 {% block content %}
@@ -21,8 +23,18 @@
     <!-- Верхняя панель управления -->
     <div class="calendar-controls">
         <div class="week-selector">
-            <button class="nav-btn prev-week">◀</button>
-            <button class="nav-btn next-week">▶</button>
+            <button class="nav-btn prev-week">
+                <svg class="inner-svg" viewBox="0 0 24 24">
+                    <polygon points="15,5 5,12 15,19" />
+                </svg>
+            </button>
+            <button class="nav-btn next-week">
+                <svg class="inner-svg" viewBox="0 0 24 24">
+                    <polygon points="9,5 19,12 9,19" />
+
+                </svg>
+            </button>
+
             <!-- <select class="week-dropdown">
                 <option value="current">Текущая неделя</option>
                 <option value="2024-12-02">2-8 декабря 2024</option>
@@ -40,7 +52,9 @@
     <div class="calendar-header">
         <div class="time-column">Время</div>
         {% for day in week_days %}
-        <div class="day-header" data-date="{{ day.date }}">
+        <div class="day-header"
+             data-date="{{ day.date }}"
+             data-dayindex="{{ day.day_index }}">
             <div class="day-name">{{ day.name }}</div>
             <div class="day-date">{{ day.date }}</div>
         </div>

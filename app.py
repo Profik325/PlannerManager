@@ -1,10 +1,10 @@
 from flask import Flask
 from config import Config
-from extensions import login_manager
+from extensions import login_manager, setup_adm
 
 from data import db_session
-from routs.home_route import main
-from routs.user_route import users
+from routes.home_route import main
+from routes.user_route import users
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -13,6 +13,7 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     # db_session.global_init("instance/dayfall.db")
     db_session.global_init("instance/calendar.db")
+    setup_adm()
 
     # регистрация веток блюпринта
     app.register_blueprint(main)
