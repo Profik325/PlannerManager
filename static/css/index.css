@@ -228,3 +228,163 @@
     background: rgba(255, 255, 255, 0.2);      /* Более светлый фон */
     transform: translateY(-3px);               /* Подъем кнопки */
 }
+
+/* index.css */
+
+/* Контейнер для карточек */
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Авто-колонки */
+    gap: 20px;
+    overflow-y: auto;   /* Вертикальный скролл */
+    padding: 20px 0;
+}
+
+/* Стилизация вертикального скроллбара */
+.tables-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tables-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tables-grid::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+    opacity: 0.3;
+}
+
+/* Карточка таблицы - кликабельный квадрат */
+.table-card {
+    background: var(--gradient_color_1_theme);
+    border-radius: 16px; /* Закругленные углы */
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 2px solid var(--gradient_color_1_darkened_theme);
+    transition: all 0.25s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block; /* Чтобы вся карточка была ссылкой */
+    position: relative;
+    aspect-ratio: 1; /* Делаем квадратными */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Эффекты при наведении */
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: black;
+}
+
+/* Заголовок таблицы */
+.table-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: black;
+    line-height: 1.3;
+}
+
+/* Описание */
+.table-description {
+    margin: 10px 0;
+    color: black;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.table-description p {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Ограничиваем 3 строки */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Статистика */
+.table-stats {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    color: vblack;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Убираем кнопку "Открыть" - вся карточка кликабельна */
+.table-actions {
+    display: none; /* Скрываем кнопки, т.к. кликабельна вся карточка */
+}
+
+/* Иконка стрелки в углу */
+.table-card::after {
+    content: "→";
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: black;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.table-card:hover::after {
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+/* Для пустого состояния */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 2px dashed var(--border-color);
+    margin: 20px 0;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .tables-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .table-card {
+        padding: 20px;
+        aspect-ratio: 1.1; /* Чуть выше на мобилках */
+    }
+}
+
+@media (max-width: 480px) {
+    .tables-grid {
+        grid-template-columns: 1fr; /* Одна колонка */
+    }
+
+    .table-card {
+        aspect-ratio: auto; /* Снимаем квадратность */
+        min-height: 180px;
+    }
+}

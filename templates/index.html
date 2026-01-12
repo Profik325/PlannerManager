@@ -62,14 +62,6 @@
                 {% endfor %}
             </div>
 
-            <!-- Кнопка "Еще таблицы", если их много
-            {% if tables|length >= 6 %}
-            <div class="text-center mt-4">
-                <a href="{{ url_for('main.all_tables') }}" class="btn btn-secondary">
-                    Показать все таблицы ({{ tables|length }})
-                </a>
-            </div>
-            {% endif %}-->
 
         {% else %}
             <!-- Показываем заглушку, если таблиц нет -->

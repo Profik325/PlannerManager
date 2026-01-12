@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     const userId = getCurrentUserId();
 
+    const tableSquares = document.querySelectorAll('.table-card');
+    tableSquares.forEach(square => {
+        square.addEventListener('click', function() {
+            const id = square.dataset.tableId
+            window.location.href = `/calendar/${id}`;
+        });
+
+    });
+
     const createBtn = document.querySelector('.btn-create-table');
     if (createBtn) {
         createBtn.addEventListener('click', function(e) {
@@ -109,4 +118,3 @@ function getCurrentUserId() {
     // const userElement = document.querySelector('[data-user-id]');
     // return userElement ? userElement.dataset.userId : null;
 }
-

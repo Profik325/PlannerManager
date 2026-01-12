@@ -93,6 +93,8 @@
 
 /*main*/
 body {
+    display: flex;
+    flex-direction: column;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     background: linear-gradient(180deg, var(--gradient_color_1_darkened_theme), var(--gradient_color_1_theme));
@@ -300,7 +302,6 @@ body {
     transition: .4s;
 }
 
-/* Круглый переключатель внутри ползунка */
 .theme-switcher .slider:before {
     position: absolute;
     content: "";
@@ -309,10 +310,10 @@ body {
     left: 2px;
     bottom: 50px;
     background-color: var(--gradient_color_2_theme);
-    border: 1px solid var(--gradient_color_2_darkened_theme);
+    border: 1px solid var(--gradient_color_2_darkened_theme);/**/
     /*border-radius: 50%;*/
     transition: .4s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);/**/
 }
 
 /* Когда чекбокс активен (темная тема) */
@@ -339,9 +340,12 @@ body {
     animation: themeSwitch 0.4s ease;
 }
 
+
 .main-content {
-    max-width: 1200px;
+    min-width: 900px;
     min-height: 600px;
+    flex: 1;
+    width: 96%;
     margin: 2rem auto;
     padding: 0 2rem;
     background: var(--background_main_color);
