@@ -1,6 +1,4 @@
-// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
-    // Устанавливаем текущую неделю
     window.currentWeekStart = getMonday(new Date());
 
     const pathParts = window.location.pathname.split('/').filter(Boolean);
@@ -21,47 +19,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const dayHeaders = document.querySelectorAll('.day-header');
     const dateRangeElement = document.querySelector('.date-range');
-    // Назначаем обработчики кликов
     dayHeaders.forEach(header => {
         header.addEventListener('click', function() {
 
-            // Получаем данные из атрибутов
             const date = this.dataset.date;
             const dayIndex = this.querySelector('.day-index');
             const dayName = this.querySelector('.day-name').textContent;
             const dayDate = this.querySelector('.day-date').textContent;
 
-            // Убираем выделение у всех дней
             dayHeaders.forEach(h => {
                 h.classList.remove('selected', 'active');
                 h.style.backgroundColor = '';
                 h.style.boxShadow = '';
             });
 
-            // Выделяем выбранный день
             this.classList.add('selected', 'active');
             this.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
             this.style.boxShadow = 'inset 0 0 15px var(--color_2_theme_rgba)';
 
             ChosenDayIndex = this.dataset.dayindex;
-
-            // highlightDayCells(date);
         });
 
-        header.addEventListener('dblclick', function() {
+        /*header.addEventListener('dblclick', function() {
             const date = this.dataset.date;
             openEventModalForDate(date);
-        });
+        });*/
     });
 
-    // Обновляем интерфейс
     const weekDates = getWeekDates(window.currentWeekStart);
     updateCalendarHeader(weekDates);
 
-    // Загружаем события текущей недели
-    //loadEventsForWeek(weekDates[0], weekDates[6]);
+    loadEventsForWeek();
 
-    // Назначаем обработчики кнопок
     document.querySelector('.prev-week').addEventListener('click', function() {
         navigateWeek(-1);
     });
@@ -70,16 +59,13 @@ document.addEventListener('DOMContentLoaded', function() {
         navigateWeek(1);
     });
 
-    // Кнопка "Сегодня"
     document.querySelector('.btn-today').addEventListener('click', function() {
         window.currentWeekStart = getMonday(new Date());
         const weekDates = getWeekDates(window.currentWeekStart);
         updateCalendarHeader(weekDates);
         checkNavigationLimits();
-        //loadEventsForWeek(weekDates[0], weekDates[6]);
     });
 
-    // Открытие модального окна
     document.querySelectorAll('.add-event-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const date = this.dataset.date;
@@ -88,72 +74,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Закрытие модального окна
     document.querySelector('.btn-cancel').addEventListener('click', closeEventModal);
     document.querySelector('.modal').addEventListener('click', function(e) {
         if (e.target === this) closeEventModal();
     });
 
-    // Сохранение события
     document.getElementById('eventForm').addEventListener('submit', function(e) {
         e.preventDefault();
         saveEvent();
     });
 
-    // Отметка текущего времени
     highlightCurrentTime();
-    setInterval(highlightCurrentTime, 60000); // Обновлять каждую минуту
+    setInterval(highlightCurrentTime, 60000);
+    setInterval(loadEventsForWeek, 100); // temporary backup just to avoid visual issues with rendering events; gotta fix later
 });
 
 // Функция для навигации по неделям
 function navigateWeek(direction) {
     checkNavigationLimits();
-    // direction: -1 для предыдущей недели, 1 для следующей недели
 
-    // Проверяем, определена ли переменная currentWeekStart в объекте window
-    // Это глобальная переменная для хранения начала текущей отображаемой недели
     if (!window.currentWeekStart) {
-        // Если переменная не определена (первый запуск), устанавливаем на понедельник текущей недели
-        // getMonday() возвращает дату понедельника для любой переданной даты
         window.currentWeekStart = getMonday(new Date());
     }
 
-    // Получаем текущую дату и время
     const today = new Date();
-    // Получаем понедельник текущей недели (для проверки лимитов)
     const todayMonday = getMonday(today);
 
-    // Создаем копию текущего понедельника для вычисления новой даты
     const newDate = new Date(window.currentWeekStart);
-    // Добавляем или вычитаем 7 дней в зависимости от direction
-    // direction * 7: -1 * 7 = -7 дней, 1 * 7 = +7 дней
     newDate.setDate(newDate.getDate() + (direction * 7));
 
-    // Вычисляем максимальную дату для перехода назад (1 неделя назад от текущей)
     const weeksBackLimit = getMonday(new Date(todayMonday));
-    // Устанавливаем дату на 7 дней раньше
     weeksBackLimit.setDate(weeksBackLimit.getDate() - 7);
 
-    // Вычисляем максимальную дату для перехода вперед (3 недели вперед от текущей)
     const weeksForwardLimit = getMonday(new Date(todayMonday));
-    // Устанавливаем дату на 21 день вперед (3 недели * 7 дней)
     weeksForwardLimit.setDate(weeksForwardLimit.getDate() + (2 * 7));
 
-    // Проверяем, не пытаемся ли перейти дальше разрешенного лимита назад
-    // direction < 0 означает нажатие кнопки "назад"
-    // newDate < weeksBackLimit проверяет, стала ли новая дата раньше лимита
     if (direction < 0 && newDate < weeksBackLimit + 1) {
-        // Если достигли лимита - выводим сообщение в консоль
-        // Выходим из функции, не изменяя текущую неделю
         return;
     }
 
-    // Проверяем, не пытаемся ли перейти дальше разрешенного лимита вперед
-    // direction > 0 означает нажатие кнопки "вперед"
-    // newDate > weeksForwardLimit проверяет, стала ли новая дата позже лимита
     if (direction > 0 && newDate > weeksForwardLimit + 1) {
-        // Если достигли лимита - выводим сообщение в консоль
-        // Выходим из функции, не изменяя текущую неделю
         return;
     }
 
@@ -163,13 +123,8 @@ function navigateWeek(direction) {
     // Получаем массив дат для новой недели (от понедельника до воскресенья)
     const weekDates = getWeekDates(newDate);
 
-    // Обновляем заголовок календаря с новыми датами
     updateCalendarHeader(weekDates);
-    // Загружаем события для новой недели
-    // weekDates[0] - понедельник, weekDates[6] - воскресенье
-    //loadEventsForWeek(weekDates[0], weekDates[6]);
 
-    // Выводим в консоль информацию о переключении
     console.log('Переключились на неделю с', formatDate(weekDates[0]), 'по', formatDate(weekDates[6]));
     checkNavigationLimits();
 }
@@ -204,6 +159,8 @@ function checkNavigationLimits() {
         nextBtn.classList.remove('disabled');
         nextBtn.disabled = false;
     }
+
+    loadEventsForWeek();
 }
 
 // Вспомогательная функция: получить понедельник для любой даты
@@ -333,13 +290,20 @@ function closeEventModal() {
 }
 
 function saveEvent() {
+    const weekDates = getWeekDates(window.currentWeekStart);
+    const startStr = weekDates[0].toISOString().split('T')[0]; // понедельник
+    const endStr = weekDates[6].toISOString().split('T')[0];
+    console.log(startStr + ' - ' + endStr);
+
     const eventData = {
         date: document.getElementById('eventDate').value,
         title: document.getElementById('eventTitle').value,
         description: document.getElementById('eventDescription').value,
         startTime: document.getElementById('eventStartTime').value,
+        dateRange: startStr + ' - ' + endStr,
         duration: document.getElementById('eventDuration').value,
         table_id: window.currentTableId,
+        color: document.getElementById('eventColor').value,
     };
 
     // Отправка данных на сервер
@@ -354,7 +318,7 @@ function saveEvent() {
     .then(data => {
         if (data.success) {
             closeEventModal();
-            location.reload(); // Перезагрузить страницу для отображения события
+            loadEventsForWeek();
             }
         })
     .catch(error => {
@@ -364,24 +328,95 @@ function saveEvent() {
 
 }
 
+function loadEventsForWeek() {
+    if (!window.currentTableId) return;
+
+    const weekDates = getWeekDates(window.currentWeekStart);
+    const dateRange = weekDates[0].toISOString().split('T')[0] + ' - ' + weekDates[6].toISOString().split('T')[0];
+    const meth = 'get-week-events';
+
+    // получение событий
+    fetch(`/api/events?id=${window.currentTableId}&method=${meth}&dateRange=${dateRange}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderEvents(data.events);
+            } else {
+                // console.error('Ошибка загрузки событий: ', data.error); // только 404 так что не надо лог
+                renderEvents(null);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка сети:', error);
+        });
+}
+
+function renderEvents(events) {
+    document.querySelectorAll('.add-event-btn').forEach(btn => {
+        btn.style.display = 'flex'});
+
+    document.querySelectorAll('.event-card').forEach(card => card.remove());
+
+    if (!events) {
+        const temp = document.querySelectorAll('.event-card')
+        if (temp) {temp.forEach(card => card.style.display = 'none')}; // backup, but it still doesnt work lol
+        return;
+    }
+
+    events.forEach(event => {
+        const startTime = new Date(event.start_time);
+        const eventDate = startTime.toLocaleDateString('sv-SE');
+        const eventHour = startTime.getHours();
+
+        // Ищем слот для этого события
+        const slot = document.querySelector(
+            `.time-slot[data-date="${eventDate}"][data-hour="${eventHour}"]`
+        );
+
+        if (slot) {
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.style.backgroundColor = event.color || '#4CAF50';
+            eventCard.dataset.eventId = event.id;
+
+            // Форматируем время события
+            const startStr = startTime.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const endTime = new Date(event.end_time);
+            const endStr = endTime.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            eventCard.innerHTML = `
+                <div class="event-title">${event.title || 'Без названия'}</div>
+                <div class="event-time">${startStr} - ${endStr}</div>
+            `;
+
+            eventCard.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Функция для просмотра деталей события
+                alert(`Событие: ${event.title}\nОписание: ${event.description || 'Нет описания'}`);
+            });
+
+            slot.appendChild(eventCard);
+
+            // Скрываем кнопку добавления в этом слоте
+            const addBtn = slot.querySelector('.add-event-btn');
+            if (addBtn) {
+                addBtn.style.display = 'none';
+            }
+        }
+    });
+}
+
 function highlightCurrentTime() {
     const now = new Date();
     const currentHour = now.getHours();
     const currentDate = now.toISOString().split('T')[0];
-
-    /*// Убираем предыдущую подсветку
-    document.querySelectorAll('.time-slot.current-time').forEach(el => {
-        el.classList.remove('current-time');
-    });
-
-    // Находим текущий таймслот
-    const currentSlot = document.querySelector(
-        `.time-slot[data-date="${currentDate}"][data-hour="${currentHour}"]`
-    );
-
-    if (currentSlot) {
-        currentSlot.classList.add('current-time');
-    }*/
 
     // Отмечаем сегодняшний день
     document.querySelectorAll('.day-header.today').forEach(el => {
@@ -399,35 +434,12 @@ function highlightCurrentTime() {
 
 let ChosenDayIndex = null;
 
-// Двойной клик для быстрого создания события в этот день
-
-
 // Функция обновления отображаемой даты
 function updateSelectedDate(date, dayName, dayDate) {
     if (dateRangeElement) {
-        // Форматируем дату
         const formattedDate = formatDate(new Date(date));
         dateRangeElement.textContent = `${dayName}, ${formattedDate}`;
-        // Или можно показывать выбранный день в диапазоне
-        // dateRangeElement.textContent = `Выбран: ${dayName} ${dayDate}`;
     }
-};
-
-// Функция фильтрации событий по дате
-function filterEventsByDate(date) {
-    const allEvents = document.querySelectorAll('.event');
-    allEvents.forEach(event => {
-        const eventDate = event.dataset.date;
-        if (eventDate === date) {
-            event.style.display = 'block';
-            event.style.opacity = '1';
-        } else {
-            event.style.display = 'none';
-            event.style.opacity = '0.3';
-        }
-    });
-    // Или альтернативно - подсветка ячеек этого дня
-    // highlightDayCells(date);
 };
 
    // Подсветка ячеек выбранного дня
@@ -447,20 +459,20 @@ function filterEventsByDate(date) {
    //}
    // Открытие модального окна для создания события в выбранный день
 
-   function openEventModalForDate(date) {
-       const modal = document.getElementById('eventModal');
-       const dateInput = document.getElementById('eventDate');
-       if (modal && dateInput) {
-           dateInput.value = date;
-           modal.style.display = 'flex';
-       }
-   };
+function openEventModalForDate(date) {
+    const modal = document.getElementById('eventModal');
+    const dateInput = document.getElementById('eventDate');
+    if (modal && dateInput) {
+        dateInput.value = date;
+        modal.style.display = 'flex';
+    }
+};
 
-   // Вспомогательные функции
-   function formatDate(date) {
-       return date.toLocaleDateString('ru-RU', {
-           day: 'numeric',
-           month: 'long',
-           year: 'numeric'
-       });
-   };
+// Вспомогательные функции
+function formatDate(date) {
+    return date.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};

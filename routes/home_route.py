@@ -162,16 +162,22 @@ def save_event():
     db_sess = db_session.create_session()
 
     ID, method = request.args.get('id'), request.args.get('method')
+    date_range = request.args.get('dateRange')
     if method == 'get-week-events':
-        events = db_sess.query(Table).get(table_id=ID).all()
+        events = db_sess.query(Event).filter(
+            Event.table_id == ID,
+            Event.date_range == date_range
+        ).all()
         db_sess.close()
-        if not events:
+        events_data = [event.to_dict() for event in events]
+        if not events_data:
             return jsonify({
-                'success': False,
-                'title': 'None'
-            }), 404
+                'success': True,
+                'events': []
+            })
         return jsonify({
-            'success': True
+            'success': True,
+            'events': events_data
         })
 
     if not ID:
@@ -179,30 +185,28 @@ def save_event():
             # Получаем данные из запроса
             data = request.get_json()
 
-            date_str = data['date']  # "2024-12-01"
-            time_str = data['startTime']  # "10:00" или "10:00:00"
+            date_str = data['date']
+            time_str = data['startTime']
 
-            # Если время в формате HH:MM, добавляем секунды
             if len(time_str) == 5:  # "10:00"
                 time_str = time_str + ":00"
 
-            # Создаем datetime объект
             start_datetime_str = f"{date_str}T{time_str}"
             start_datetime = datetime.fromisoformat(start_datetime_str)
 
-            # 2. Вычисляем время окончания
             duration_minutes = int(data['duration'])
             end_datetime = start_datetime + timedelta(minutes=duration_minutes)
 
-            # 3. Получаем user_id (если есть аутентификация)
             user_id = session.get('user_id') if session.get('user_id') else 0
 
             new_event = Event(title = data['title'],
                               description = data['description'],
                               start_time = start_datetime,
                               end_time = end_datetime,
+                              date_range = data['dateRange'],
                               creator_id = user_id,
-                              table_id = data['table_id'])
+                              table_id = data['table_id'],
+                              color = data['color'])
 
             db_sess.add(new_event)
             db_sess.commit()

@@ -12,10 +12,11 @@ class Event(SqlAlchemyBase, SerializerMixin):
     description = sqlalchemy.Column(sqlalchemy.Text)
     start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     end_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
+    date_range = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
     table_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('tables.id'), nullable=False)
     creator_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.utcnow)
-    # color = sqlalchemy.Column(sqlalchemy.String(7), default='#4a6fa5')
+    color = sqlalchemy.Column(sqlalchemy.String(7), default='#dc8e00')
     
     # Простая логика участников (без отдельной таблицы)
     # participants_list = sqlalchemy.Column(sqlalchemy.Text, default='[]')
@@ -89,23 +90,5 @@ class Event(SqlAlchemyBase, SerializerMixin):
             'created_at': self.created_at,
             'creator_id': self.creator_id,
             'table_id': self.table_id,
-            # 'max_participants': self.max_participants,
-            # 'participant_count': self.get_participant_count(),
-            # 'is_full': self.is_full(),
             'duration': self.get_duration_minutes()
-        }
-
-    def to_calendar_format(self):
-        """Формат для FullCalendar и подобных"""
-        return {
-            'id': self.id,
-            'title': self.title,
-            'start': self.start_time.isoformat() if self.start_time else None,
-            'end': self.end_time.isoformat() if self.end_time else None,
-            'color': self.color,
-            'extendedProps': {
-                'description': self.description,
-                'location': self.location,
-                'creator_id': self.creator_id
-            }
         }

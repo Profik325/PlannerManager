@@ -1,7 +1,7 @@
 /* Основной контейнер приложения (не таблицы) */
 .main-content {
     max-width: 98%;        /* Максимальная ширина контента */
-    min-height: 1440px;        /* Минимальная высота */
+    min-height: 96%;        /* Минимальная высота */
     margin: 2rem auto;        /* Отступ сверху-снизу 2rem, по центру */
     padding: 0 0rem;          /* Отступы слева-справа */
     background: transparent;   /* Прозрачный фон */
@@ -452,57 +452,29 @@
     transform: scale(1.2) !important;          /* Увеличение на 20% */
 }
 
-/* ===== СОБЫТИЕ В КАЛЕНДАРЕ ===== */
-.event {
-    position: absolute;                        /* Абсолютное позиционирование */
-    left: 2px;                                 /* Отступ слева */
-    right: 2px;                                /* Отступ справа */
-    top: 2px;                                  /* Отступ сверху */
-    bottom: 2px;                               /* Отступ снизу */
-    background: linear-gradient(135deg,        /* Градиентный фон */
-        var(--gradient_color_1_theme),
-        var(--gradient_color_2_theme));
-    border-radius: 4px;                        /* Закругленные углы */
-    padding: 6px;                              /* Внутренние отступы */
-    font-size: 13px;                           /* Размер шрифта */
-    overflow: hidden;                          /* Скрыть выходящий текст */
-    cursor: pointer;                           /* Курсор-указатель */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Белая полупрозрачная граница */
-    box-shadow: 0 2px 8px var(--color_theme_shadow_rgba); /* Тень */
-    transition: all 0.3s;                      /* Плавные переходы */
+/* ивенты события */
+.event-card {
+    border-radius: 4px;
+    padding: 8px;
+    margin: 2px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    overflow: hidden;
+    max-height: 60px;
 }
 
-/* Состояние при наведении на событие */
-.event:hover {
-    transform: translateY(-1px);               /* Подъем на 1px */
-    box-shadow: 0 4px 12px var(--color_theme_shadow_rgba); /* Более выраженная тень */
-    filter: brightness(110%);                  /* Увеличение яркости */
+.event-card .event-title {
+    font-weight: bold;
+    margin-bottom: 2px;
 }
 
-/* Время события */
-.event-time {
-    font-weight: 700;                          /* Жирный шрифт */
-    display: block;                            /* Блочный элемент */
-    margin-bottom: 2px;                        /* Отступ снизу */
-    color: white;                              /* Белый текст */
-    text-shadow: var(--text-shadow-primary);   /* Тень текста */
-    font-size: 11px;                           /* Размер шрифта */
-}
-
-/* Название события */
-.event-title {
-    display: block;                            /* Блочный элемент */
-    white-space: nowrap;                       /* Не переносить текст */
-    overflow: hidden;                          /* Скрыть выходящий текст */
-    text-overflow: ellipsis;                   /* Троеточие если текст не помещается */
-    color: white;                              /* Белый текст */
-    font-weight: 600;                          /* Жирный шрифт */
-    text-shadow: var(--text-shadow-secondary); /* Тень текста */
-    font-size: 12px;                           /* Размер шрифта */
+.event-card .event-time {
+    font-size: 11px;
+    opacity: 0.9;
 }
 
 /* ===== МОДАЛЬНОЕ ОКНО (для создания события) ===== */
-/* ОКНО СОЗДАНИЯ ТЬАБЛИЦЫ */
 .modal {
     display: none;                             /* Скрыто по умолчанию */
     position: fixed;                           /* Фиксированное позиционирование */
